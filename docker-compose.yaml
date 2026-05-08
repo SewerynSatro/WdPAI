@@ -15,6 +15,7 @@ services:
       - pg-network
   
   db:
+    platform: linux/arm64
     build:
       context: .
       dockerfile: docker/db/Dockerfile
@@ -23,7 +24,7 @@ services:
     networks:
       - pg-network
     volumes:
-      - ./docker/db:/docker-entrypoint-initdb.d
+      - ./docker/db/init:/docker-entrypoint-initdb.d
   
   php:
     build:
@@ -36,7 +37,7 @@ services:
   
   pgadmin-wdpai:
     image: dpage/pgadmin4:latest
-    container_name: pg-admin2
+    container_name: pg-admin3
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@example.com
       PGADMIN_DEFAULT_PASSWORD: admin
