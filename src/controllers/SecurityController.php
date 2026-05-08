@@ -13,10 +13,11 @@ class SecurityController extends AppController {
 
     public function login() {
         if ($this->isPost()) {
-            $email = $_POST['email'] ?? '';
+            $email    = $_POST['email'] ?? '';
             $password = $_POST['password'] ?? '';
 
-            $user = $this->usersRepository->getUserByEmail($email);
+            $usersRepository = new UsersRepository();
+            $user = $usersRepository->getUserByEmail($email);
 
             if (!$user || !password_verify($password, $user['password'])) {
                 return $this->render('login', [
@@ -25,10 +26,11 @@ class SecurityController extends AppController {
             }
 
             session_start();
-            $_SESSION['user_id'] = $user['id'];
+            $_SESSION['user_id']    = $user['id'];
             $_SESSION['user_email'] = $user['email'];
 
-            header('Location: /dashboard');
+            $url = "http://$_SERVER[HTTP_HOST]";
+            header("Location: {$url}/dashboard");
             exit();
         }
 
