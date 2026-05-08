@@ -35,12 +35,11 @@ class UsersRepository extends Repository {
         string $hashedPassword,
         string $firstname,
         string $lastname,
-        string $bio = ''
     ) {
         $query = $this->database->connect()->prepare(
             "
-            INSERT INTO users (firstname, lastname, email, password, bio)
-            VALUES (?, ?, ?, ?, ?);
+            INSERT INTO users (firstname, lastname, email, password)
+            VALUES (?, ?, ?, ?);
             "
         );
         $query->execute([
@@ -48,7 +47,6 @@ class UsersRepository extends Repository {
             $lastname,
             $email, 
             $hashedPassword,
-            $bio
         ]);
     }
 }

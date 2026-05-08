@@ -3,12 +3,13 @@ CREATE TABLE users (
     id SERIAL PRIMARY KEY,
     
     -- Dane użytkownika z podstawową walidacją
-    username VARCHAR(50) NOT NULL UNIQUE,
+    firstname VARCHAR(50) NOT NULL,
+    lastname VARCHAR(50) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
     password TEXT NOT NULL,
     
     -- Opcjonalne pole profilowe
-    full_name VARCHAR(100),
+    -- full_name VARCHAR(100),
     
     -- Metadane systemowe
     is_active BOOLEAN DEFAULT TRUE,

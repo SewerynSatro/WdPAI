@@ -1,26 +1,67 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-  <head>
-    <?php include __DIR__ . '/partials/head.html'; ?>
-  </head>
-  <body>
+<head>
+  <?php include __DIR__ . '/partials/head.html'; ?>
+  <link rel="stylesheet" href="public/styles/register.css" />
+</head>
+<body>
+<div class="register-page">
+  <div class="register-card">
+    <h1>Utwórz konto</h1>
+    <p class="subtitle">Dołącz do rytmu HeartBeat.</p>
+
+    <?php if (isset($messages)): ?>
+    <p class="messages"><?= $messages ?></p>
+    <?php endif; ?>
+
     <form method="POST" action="\register">
-      <h1>REGISTER FORM</h1>
+      <div class="form-group">
+        <label class="form-label">Imię</label>
+        <div class="form-input-wrap">
+          <span class="material-symbols-outlined">person</span>
+          <input class="form-input" name="firstName" type="text" placeholder="Twoje imię" />
+        </div>
+      </div>
 
-      <?php if(isset($messages)): ?>
+      <div class="form-group">
+        <label class="form-label">Nazwisko</label>
+        <div class="form-input-wrap">
+          <span class="material-symbols-outlined">badge</span>
+          <input class="form-input" name="lastName" type="text" placeholder="Twoje nazwisko" />
+        </div>
+      </div>
 
-      <p class="messages">
-        <?= $messages ?>
-      </p>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <div class="form-input-wrap">
+          <span class="material-symbols-outlined">mail</span>
+          <input class="form-input" name="email" type="email" placeholder="ty@example.com" />
+        </div>
+      </div>
 
-      <?php endif; ?>
-      <input name="email" type="email" placeholder="Twój email" />
-      <input name="password" type="password" placeholder="Twoje hasło" />
-      <input name="password2" type="password" placeholder="Powtórz hasło" />
+      <div class="form-group">
+        <label class="form-label">Hasło</label>
+        <div class="form-input-wrap">
+          <span class="material-symbols-outlined">lock</span>
+          <input class="form-input" name="password" type="password" placeholder="Minimum 8 znaków" />
+        </div>
+      </div>
 
-      <input name="firstName" type="text" placeholder="Imie" />
-      <input name="lastName" type="text" placeholder="Nazwisko" />
-      <button type="submit">REGISTER</button>
+      <div class="form-group">
+        <label class="form-label">Powtórz hasło</label>
+        <div class="form-input-wrap">
+          <span class="material-symbols-outlined">lock_reset</span>
+          <input class="form-input" name="password2" type="password" placeholder="Wpisz hasło ponownie" />
+        </div>
+      </div>
+
+      <button class="btn-submit" type="submit">Zarejestruj się</button>
     </form>
-  </body>
+
+    <p class="register-footer">
+      Masz już konto? <a href="/login">Zaloguj się</a>
+    </p>
+  </div>
+</div>
+</body>
 </html>

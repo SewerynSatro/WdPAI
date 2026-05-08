@@ -1,31 +1,86 @@
 <?php
 
 require_once 'AppController.php';
+require_once __DIR__ . '/../repositories/UsersRepository.php';
 
 class SecurityController extends AppController {
 
+    private UsersRepository $usersRepository;
+
+    public function __construct() {
+        $this->usersRepository = new UsersRepository();
+    }
+
     public function login() {
-        // TODO sprawdzeie czy user istnieje
-
         if ($this->isPost()) {
-            // return $this->render("dashboard");
+            $email = $_POST['email'] ?? '';
+            $password = $_POST['password'] ?? '';
 
-            var_dump($_POST);
-            //
+            $user = $this->usersRepository->getUserByEmail($email);
 
-            $url = "http://$_SERVER[HTTP_HOST]";
-            header("Location: {$url}/dashboard");
+            if (!$user || !password_verify($password, $user['password'])) {
+                return $this->render('login', [
+                    'messages' => 'Nieprawidłowy email lub hasło.'
+                ]);
+            }
+
+            session_start();
+            $_SESSION['user_id'] = $user['id'];
+            $_SESSION['user_email'] = $user['email'];
+
+            header('Location: /dashboard');
+            exit();
         }
 
-        return $this->render("login");
+        return $this->render('login');
     }
 
     public function register() {
         if ($this->isPost()) {
-            // todo zarejestruj usera
-            var_dump($_POST);
+            $email      = trim($_POST['email'] ?? '');
+            $password   = $_POST['password'] ?? '';
+            $password2  = $_POST['password2'] ?? '';
+            $firstName  = trim($_POST['firstName'] ?? '');
+            $lastName   = trim($_POST['lastName'] ?? '');
+
+            // Walidacja
+            if (!$email || !$password || !$firstName || !$lastName) {
+                return $this->render('register', [
+                    'messages' => 'Wypełnij wszystkie pola.'
+                ]);
+            }
+
+            if ($password !== $password2) {
+                return $this->render('register', [
+                    'messages' => 'Hasła nie są identyczne.'
+                ]);
+            }
+
+            if (strlen($password) < 8) {
+                return $this->render('register', [
+                    'messages' => 'Hasło musi mieć minimum 8 znaków.'
+                ]);
+            }
+
+            if ($this->usersRepository->getUserByEmail($email)) {
+                return $this->render('register', [
+                    'messages' => 'Konto z tym emailem już istnieje.'
+                ]);
+            }
+
+            $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
+
+            $this->usersRepository->createUser(
+                $email,
+                $hashedPassword,
+                $firstName,
+                $lastName
+            );
+
+            header('Location: /login');
+            exit();
         }
 
-        return $this->render("register");
+        return $this->render('register');
     }
 }
