@@ -34,18 +34,19 @@ class Routing {
     public static function run(string $path) {
         // TODO sprawdzać za pomoca array_key_exists
         switch($path) {
-            case 'dashboard':
             case '':
                 include 'public/views/landing.html';
+                break;
+            case 'dashboard':
+                $controller = new DashboardController();
+                $controller->index();
                 break;
             case 'login':
             case 'register':
                 $controller = Routing::$routes[$path]["controller"];
                 $action = Routing::$routes[$path]["action"];
-
                 $controllerObj = new $controller;
                 $id = null;
-
                 $controllerObj->$action($id);
                 break;
             case 'logout':

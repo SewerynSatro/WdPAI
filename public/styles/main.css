@@ -48,7 +48,7 @@ body::before {
   right: -5%;
   width: 500px;
   height: 500px;
-  background: rgba(86, 47, 84, 0.30);
+  background: rgba(86, 47, 84, 0.50);
   border-radius: 50%;
   filter: blur(100px);
   pointer-events: none;
@@ -62,7 +62,7 @@ body::after {
   left: -5%;
   width: 400px;
   height: 400px;
-  background: rgba(246, 80, 189, 0.12);
+  background: rgba(246, 80, 189, 0.20);
   border-radius: 50%;
   filter: blur(100px);
   pointer-events: none;
