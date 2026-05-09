@@ -3,19 +3,10 @@
 <head>
   <?php include __DIR__ . '/partials/head.html'; ?>
   <link rel="stylesheet" href="public/styles/login.css" />
-  <link rel="stylesheet" href="public/styles/landing.css" />
+  <link rel="stylesheet" href="public/styles/partials/nav.css" />
 </head>
 <body>
-<nav class="landing-nav">
-  <a class="brand" href="/">
-    <img src="public/assets/img/logo.svg" alt="HeartBeat" />
-    HeartBeat
-  </a>
-  <div class="nav-actions">
-    <a href="/login" class="btn-ghost btn-primary-nav">Login</a>
-    <a href="/register" class="btn-primary">Register</a>
-  </div>
-</nav>
+<?php include __DIR__ . '/partials/nav.html'; ?>
 <div class="login-page">
   <div class="login-card">
     <div class="login-logo">

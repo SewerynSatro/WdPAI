@@ -2,8 +2,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 100vh;
-    padding: 1rem;
+    min-height: calc(100vh - 65px);
+    padding: 1.5rem 1rem;
 }
 
 .register-card {
