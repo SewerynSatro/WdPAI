@@ -1,0 +1,191 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+    <?php include __DIR__ . '/partials/head.html'; ?>
+    <link rel="stylesheet" href="public/styles/partials/sidebar.css" />
+    <link rel="stylesheet" href="public/styles/profile.css" />
+</head>
+<body>
+<div class="dashboard-layout">
+
+    <?php include __DIR__ . '/partials/sidebar.html'; ?>
+
+    <main class="dashboard-main">
+        <div class="profile-wrap">
+
+            <!-- Header -->
+            <section class="profile-header">
+                <div class="profile-header-inner">
+                    <div class="profile-blob"></div>
+
+                    <div class="profile-top">
+                        <div class="profile-avatar-wrap">
+                            <div class="profile-avatar">SE</div>
+                        </div>
+                        <div class="profile-info">
+                            <h1 class="profile-name">Seweryn, 22</h1>
+                            <p class="profile-city">Warsaw</p>
+                            <div class="profile-genre-tags">
+                                <span class="profile-genre-tag">Indie</span>
+                                <span class="profile-genre-tag">Alternative</span>
+                                <span class="profile-genre-tag">Rock</span>
+                            </div>
+                        </div>
+                        <div class="profile-actions">
+                            <button class="btn-sync">
+                                <span class="material-symbols-outlined">sync</span>
+                                Sync
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="profile-stats">
+                        <div class="profile-stat">
+                            <span class="stat-value">150</span>
+                            <span class="stat-label">Artists</span>
+                        </div>
+                        <div class="profile-stat profile-stat-mid">
+                            <span class="stat-value">150</span>
+                            <span class="stat-label">Tracks</span>
+                        </div>
+                        <div class="profile-stat">
+                            <span class="stat-value">24</span>
+                            <span class="stat-label">Genres</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- No Spotify connected state -->
+            <?php if (false): ?>
+            <div class="no-spotify">
+                <span class="material-symbols-outlined">library_music</span>
+                <p>Connect Spotify to see your musical identity.</p>
+                <a href="/settings" class="btn-connect-spotify">
+                    <span class="material-symbols-outlined">link</span>
+                    Connect Spotify
+                </a>
+            </div>
+            <?php endif; ?>
+
+            <!-- Time Range Selector -->
+            <div class="range-tabs">
+                <a href="#" class="range-tab active">4 Weeks</a>
+                <a href="#" class="range-tab">6 Months</a>
+                <a href="#" class="range-tab">All Time</a>
+            </div>
+
+            <!-- Content Tabs -->
+            <div class="content-tabs">
+                <button class="content-tab active" onclick="switchTab('artists')" id="tab-artists">Top Artists</button>
+                <button class="content-tab" onclick="switchTab('tracks')" id="tab-tracks">Top Tracks</button>
+                <button class="content-tab" onclick="switchTab('recent')" id="tab-recent">Recent</button>
+            </div>
+
+            <!-- Artists Panel -->
+            <div class="tab-panel" id="panel-artists">
+                <?php
+                $mockArtists = [
+                    ['name' => 'Arctic Monkeys', 'rank' => 1],
+                ['name' => 'Tame Impala', 'rank' => 2],
+                ['name' => 'Radiohead', 'rank' => 3],
+                ['name' => 'Vampire Weekend', 'rank' => 4],
+                ['name' => 'The Killers', 'rank' => 5],
+                ['name' => 'The Strokes', 'rank' => 6],
+                ['name' => 'MGMT', 'rank' => 7],
+                ['name' => 'Interpol', 'rank' => 8],
+                ['name' => 'LCD Soundsystem', 'rank' => 9],
+                ['name' => 'Foals', 'rank' => 10],
+                ];
+                foreach ($mockArtists as $artist):
+                ?>
+                <div class="music-card music-card-artist">
+                    <div class="music-card-image">
+                        <span class="material-symbols-outlined">person</span>
+                    </div>
+                    <div class="music-card-info">
+                        <p class="music-card-name"><?= $artist['name'] ?></p>
+                        <p class="music-card-sub">#<?= $artist['rank'] ?></p>
+                    </div>
+                    <a href="#" class="music-card-link" target="_blank">
+                        <span class="material-symbols-outlined">open_in_new</span>
+                    </a>
+                </div>
+                <?php endforeach; ?>
+            </div>
+
+            <!-- Tracks Panel -->
+            <div class="tab-panel hidden" id="panel-tracks">
+                <?php
+                $mockTracks = [
+                    ['name' => 'Do I Wanna Know?', 'artist' => 'Arctic Monkeys', 'rank' => 1],
+                ['name' => 'Let It Happen', 'artist' => 'Tame Impala', 'rank' => 2],
+                ['name' => 'R U Mine?', 'artist' => 'Arctic Monkeys', 'rank' => 3],
+                ['name' => 'Creep', 'artist' => 'Radiohead', 'rank' => 4],
+                ['name' => 'Electric Feel', 'artist' => 'MGMT', 'rank' => 5],
+                ['name' => 'Last Nite', 'artist' => 'The Strokes', 'rank' => 6],
+                ['name' => 'Mr. Brightside', 'artist' => 'The Killers', 'rank' => 7],
+                ['name' => 'Oxford Comma', 'artist' => 'Vampire Weekend', 'rank' => 8],
+                ['name' => 'Obstacles', 'artist' => 'Syd Matters', 'rank' => 9],
+                ['name' => 'Mountain at My Gates', 'artist' => 'Foals', 'rank' => 10],
+                ];
+                foreach ($mockTracks as $track):
+                ?>
+                <div class="music-card music-card-track">
+                    <div class="music-card-image">
+                        <span class="material-symbols-outlined">album</span>
+                    </div>
+                    <div class="music-card-info">
+                        <p class="music-card-name"><?= $track['name'] ?></p>
+                        <p class="music-card-sub"><?= $track['artist'] ?></p>
+                    </div>
+                    <a href="#" class="music-card-link" target="_blank">
+                        <span class="material-symbols-outlined">open_in_new</span>
+                    </a>
+                </div>
+                <?php endforeach; ?>
+            </div>
+
+            <!-- Recent Panel -->
+            <div class="tab-panel hidden" id="panel-recent">
+                <?php
+                $mockRecent = [
+                    ['name' => 'Fluorescent Adolescent', 'artist' => 'Arctic Monkeys'],
+                ['name' => 'The Less I Know The Better', 'artist' => 'Tame Impala'],
+                ['name' => 'New York City Cops', 'artist' => 'The Strokes'],
+                ['name' => 'Reptilia', 'artist' => 'The Strokes'],
+                ['name' => 'Karma Police', 'artist' => 'Radiohead'],
+                ['name' => 'Kids', 'artist' => 'MGMT'],
+                ['name' => 'A-Punk', 'artist' => 'Vampire Weekend'],
+                ['name' => 'Human', 'artist' => 'The Killers'],
+                ['name' => 'Mountain at My Gates', 'artist' => 'Foals'],
+                ['name' => 'Obstacle 1', 'artist' => 'Interpol'],
+                ];
+                foreach ($mockRecent as $track):
+                ?>
+                <div class="music-card">
+                    <div class="music-card-image">
+                        <span class="material-symbols-outlined">album</span>
+                    </div>
+                    <div class="music-card-info">
+                        <p class="music-card-name"><?= $track['name'] ?></p>
+                        <p class="music-card-sub"><?= $track['artist'] ?></p>
+                    </div>
+                </div>
+                <?php endforeach; ?>
+            </div>
+
+        </div>
+    </main>
+</div>
+
+<script>
+    function switchTab(n) {
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'));
+        document.querySelectorAll('.content-tab').forEach(b => b.classList.remove('active'));
+        document.getElementById('panel-' + n).classList.remove('hidden');
+        document.getElementById('tab-' + n).classList.add('active');
+    }
+</script>
+</body>
+</html>
