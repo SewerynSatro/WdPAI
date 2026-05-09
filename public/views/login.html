@@ -7,8 +7,12 @@
 <body>
 <div class="login-page">
   <div class="login-card">
-    <h1>Witaj z powrotem</h1>
-    <p class="subtitle">Zaloguj się, żeby znaleźć swój rytm.</p>
+    <div class="login-logo">
+      <img src="public/assets/img/logo.svg" alt="HeartBeat" />
+    </div>
+
+    <h1>Welcome back</h1>
+    <p class="subtitle">Sign in to find your rhythm.</p>
 
     <?php if (isset($messages)): ?>
     <p class="messages"><?= $messages ?></p>
@@ -19,24 +23,28 @@
         <label class="form-label">Email</label>
         <div class="form-input-wrap">
           <span class="material-symbols-outlined">mail</span>
-          <input class="form-input" name="email" type="email" placeholder="ty@example.com" />
+          <input class="form-input" name="email" type="email" placeholder="you@example.com" />
         </div>
       </div>
 
       <div class="form-group">
-        <label class="form-label">Hasło</label>
+        <label class="form-label">Password</label>
         <div class="form-input-wrap">
           <span class="material-symbols-outlined">lock</span>
-          <input class="form-input" name="password" type="password" placeholder="Twoje hasło" />
+          <input class="form-input" name="password" type="password" placeholder="Your password" />
         </div>
       </div>
 
-      <button class="btn-submit" type="submit">Zaloguj się</button>
+      <button class="btn-submit" type="submit">
+        <span class="material-symbols-outlined">login</span>
+        Login
+      </button>
     </form>
 
     <p class="login-footer">
-      Nie masz konta? <a href="/register">Zarejestruj się</a>
+      Don't have an account? <a href="/register">Create one</a>
     </p>
+
   </div>
 </div>
 </body>
