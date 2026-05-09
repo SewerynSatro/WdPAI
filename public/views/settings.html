@@ -1,0 +1,135 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+    <?php include __DIR__ . '/partials/head.html'; ?>
+    <link rel="stylesheet" href="public/styles/partials/sidebar.css" />
+    <link rel="stylesheet" href="public/styles/settings.css" />
+</head>
+<body>
+<div class="dashboard-layout">
+
+    <?php include __DIR__ . '/partials/sidebar.html'; ?>
+
+    <main class="dashboard-main">
+        <div class="settings-wrap">
+
+            <h1 class="settings-title">Settings</h1>
+            <p class="settings-subtitle">Manage your account and music connections.</p>
+
+            <!-- Music Provider -->
+            <div class="settings-card">
+                <h2 class="settings-card-title">
+                    <span class="material-symbols-outlined">headphones</span>
+                    Music Provider
+                </h2>
+                <div class="provider-row">
+                    <div class="provider-info">
+                        <span class="provider-name">Spotify</span>
+                        <span class="provider-badge badge-connected">Connected</span>
+                    </div>
+                    <button class="btn-settings-primary">
+                        <span class="material-symbols-outlined">sync</span>
+                        Sync
+                    </button>
+                </div>
+            </div>
+
+            <!-- Account -->
+            <div class="settings-card">
+                <h2 class="settings-card-title">
+                    <span class="material-symbols-outlined" style="color: var(--secondary)">person</span>
+                    Account
+                </h2>
+                <form method="POST" action="\settings\account">
+                    <div class="settings-grid">
+                        <div class="settings-field">
+                            <label class="settings-label">Display name</label>
+                            <input class="settings-input" type="text" name="display_name" placeholder="Your name" />
+                        </div>
+                        <div class="settings-field">
+                            <label class="settings-label">Email</label>
+                            <input class="settings-input" type="email" name="email" placeholder="you@example.com" />
+                        </div>
+                        <div class="settings-field">
+                            <label class="settings-label">New password</label>
+                            <input class="settings-input" type="password" name="password" placeholder="Leave blank to keep current" />
+                        </div>
+                        <div class="settings-field">
+                            <label class="settings-label">Confirm password</label>
+                            <input class="settings-input" type="password" name="password_confirm" placeholder="Repeat new password" />
+                        </div>
+                    </div>
+
+                    <div class="settings-section">
+                        <h3 class="settings-section-title">
+                            <span class="material-symbols-outlined">badge</span>
+                            Public profile
+                        </h3>
+                        <div class="settings-grid">
+                            <div class="settings-field settings-field-full">
+                                <label class="settings-label">Bio</label>
+                                <textarea class="settings-input settings-textarea" name="bio" rows="3" placeholder="A short intro for your matches"></textarea>
+                            </div>
+                            <div class="settings-field">
+                                <label class="settings-label">City</label>
+                                <input class="settings-input" type="text" name="city" placeholder="Warsaw" />
+                            </div>
+                            <div class="settings-field">
+                                <label class="settings-label">Date of birth</label>
+                                <input class="settings-input" type="date" name="birth_date" />
+                            </div>
+                            <div class="settings-field">
+                                <label class="settings-label">Gender</label>
+                                <select class="settings-input settings-select" name="gender">
+                                    <option value="">Prefer not to say</option>
+                                    <option value="male">Male</option>
+                                    <option value="female">Female</option>
+                                    <option value="non-binary">Non-binary</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            <div class="settings-field">
+                                <label class="settings-label">Looking for</label>
+                                <select class="settings-input settings-select" name="looking_for">
+                                    <option value="">Not specified</option>
+                                    <option value="everyone">Everyone</option>
+                                    <option value="male">Men</option>
+                                    <option value="female">Women</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="settings-section">
+                        <h3 class="settings-section-title">
+                            <span class="material-symbols-outlined" style="color: var(--secondary)">share</span>
+                            Social handles
+                        </h3>
+                        <div class="settings-grid settings-grid-3">
+                            <div class="settings-field">
+                                <label class="settings-label">Instagram</label>
+                                <input class="settings-input" type="text" name="instagram_handle" placeholder="@username" />
+                            </div>
+                            <div class="settings-field">
+                                <label class="settings-label">Facebook</label>
+                                <input class="settings-input" type="text" name="facebook_handle" placeholder="Profile name" />
+                            </div>
+                            <div class="settings-field">
+                                <label class="settings-label">Spotify</label>
+                                <input class="settings-input" type="text" name="spotify_handle" placeholder="Username" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="btn-settings-primary btn-save" type="submit">
+                        <span class="material-symbols-outlined">save</span>
+                        Save changes
+                    </button>
+                </form>
+            </div>
+
+        </div>
+    </main>
+</div>
+</body>
+</html>

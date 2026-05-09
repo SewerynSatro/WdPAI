@@ -23,6 +23,12 @@
                 Profile
                 </a>
             </li>
+            <li>
+                <a href="/settings" <?= ($activePage ?? '') === 'settings' ? 'class="active"' : '' ?>>
+                <span class="material-symbols-outlined">settings</span>
+                Settings
+                </a>
+            </li>
         </ul>
     </div>
     <div class="sidebar-bottom">
@@ -46,6 +52,10 @@
     <a href="/profile" <?= ($activePage ?? '') === 'profile' ? 'class="active"' : '' ?>>
     <span class="material-symbols-outlined">person</span>
     Profile
+    </a>
+    <a href="/settings" <?= ($activePage ?? '') === 'settings' ? 'class="active"' : '' ?>>
+    <span class="material-symbols-outlined">settings</span>
+    Settings
     </a>
     <a href="/logout">
         <span class="material-symbols-outlined">logout</span>

@@ -5,6 +5,8 @@ require_once 'src/controllers/DashboardController.php';
 require_once 'src/controllers/DiscoverController.php';
 require_once 'src/controllers/MatchesController.php';
 require_once 'src/controllers/ProfileController.php';
+require_once 'src/controllers/SettingsController.php';
+
 
 // TODO musimy zapewnic, ze utworzony 
 // obiekt kontrollera ma tylko jedna instancję - SINGLETON
@@ -65,6 +67,10 @@ class Routing {
                 break;
             case 'profile':
                 $controller = new ProfileController();
+                $controller->index();
+                break;
+            case 'settings':
+                $controller = new SettingsController();
                 $controller->index();
                 break;
             default:
