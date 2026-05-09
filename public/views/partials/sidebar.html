@@ -1,7 +1,7 @@
 ﻿<aside class="sidebar">
     <div class="sidebar-top">
         <a class="sidebar-brand" href="/discover">
-            <img src="public/assets/img/logo.svg" alt="HeartBeat" style="width:1.75rem;height:1.75rem;" />
+            <img src="public/assets/img/logo.svg" alt="HeartBeat" />
             HeartBeat
         </a>
         <ul class="sidebar-nav">
@@ -33,3 +33,22 @@
         </a>
     </div>
 </aside>
+
+<nav class="bottom-nav">
+    <a href="/discover" <?= ($activePage ?? '') === 'discover' ? 'class="active"' : '' ?>>
+    <span class="material-symbols-outlined">explore</span>
+    Discover
+    </a>
+    <a href="/matches" <?= ($activePage ?? '') === 'matches' ? 'class="active"' : '' ?>>
+    <span class="material-symbols-outlined">favorite</span>
+    Matches
+    </a>
+    <a href="/profile" <?= ($activePage ?? '') === 'profile' ? 'class="active"' : '' ?>>
+    <span class="material-symbols-outlined">person</span>
+    Profile
+    </a>
+    <a href="/logout">
+        <span class="material-symbols-outlined">logout</span>
+        Logout
+    </a>
+</nav>
