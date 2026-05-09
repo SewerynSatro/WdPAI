@@ -44,7 +44,11 @@ class Routing {
                 $id = null;
 
                 $controllerObj->$action($id);
-                break; 
+                break;
+            case 'logout':
+                $controller = new SecurityController();
+                $controller->logout();
+                break;
             default:
                 include 'public/views/404.html';
                 break;

@@ -37,7 +37,10 @@
 
     <div class="sidebar-bottom">
       <div class="sidebar-avatar"><?= strtoupper(substr($userEmail ?? 'U', 0, 2)) ?></div>
-      <span class="sidebar-username"><?= $userEmail ?? 'Użytkownik' ?></span>
+      <span class="sidebar-username"><?= $userEmail ?? 'User' ?></span>
+      <a href="/logout" class="logout-btn">
+        <span class="material-symbols-outlined">logout</span>
+      </a>
     </div>
   </aside>
 
