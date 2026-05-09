@@ -3,6 +3,7 @@
 require_once 'src/controllers/SecurityController.php';
 require_once 'src/controllers/DashboardController.php';
 require_once 'src/controllers/DiscoverController.php';
+require_once 'src/controllers/MatchesController.php';
 
 // TODO musimy zapewnic, ze utworzony 
 // obiekt kontrollera ma tylko jedna instancję - SINGLETON
@@ -55,6 +56,10 @@ class Routing {
                 break;
             case 'discover':
                 $controller = new DiscoverController();
+                $controller->index();
+                break;
+            case 'matches':
+                $controller = new MatchesController();
                 $controller->index();
                 break;
             default:

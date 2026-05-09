@@ -1,0 +1,176 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+    <?php include __DIR__ . '/partials/head.html'; ?>
+    <link rel="stylesheet" href="public/styles/partials/sidebar.css" />
+    <link rel="stylesheet" href="public/styles/matches.css" />
+</head>
+<body>
+<div class="dashboard-layout">
+
+    <?php include __DIR__ . '/partials/sidebar.html'; ?>
+
+    <main class="dashboard-main">
+        <div class="matches-wrap">
+
+            <h1 class="matches-title">Your Matches</h1>
+            <p class="matches-subtitle">People who share your rhythm.</p>
+
+            <?php if (false): ?>
+            <div class="matches-empty">
+                <div class="empty-logo">
+                    <img src="public/assets/img/logo.svg" alt="HeartBeat" />
+                </div>
+                <h2>It's a Match!</h2>
+                <p>...soon. Keep swiping to find your sync.</p>
+                <a href="/discover" class="btn-discover">Discover People</a>
+            </div>
+            <?php endif; ?>
+
+            <div class="matches-list">
+
+                <!-- Sarah K. -->
+                <div class="match-card">
+                    <div class="match-top">
+                        <div class="match-avatar">SA</div>
+                        <div class="match-info">
+                            <a href="#" class="match-name">Sarah K.</a>
+                            <p class="match-city">
+                                <span class="material-symbols-outlined">location_on</span>
+                                Warsaw
+                            </p>
+                            <p class="match-date">Matched May 3, 2025</p>
+                        </div>
+                        <div class="match-artists">
+                            <div class="artist-stack">
+                                <div class="artist-stack-item" style="z-index: 3;">
+                                    <img src="https://i.scdn.co/image/ab6761610000e5eb6be070445b03e0b63147c2c1" alt="Arctic Monkeys" />
+                                </div>
+                                <div class="artist-stack-item" style="z-index: 4;">
+                                    <img src="https://i.scdn.co/image/ab6761610000e5eb3fe0f7f47e9f1e8763ae0c31" alt="Tame Impala" />
+                                </div>
+                                <div class="artist-stack-item" style="z-index: 5;">
+                                    <img src="https://i.scdn.co/image/ab6761610000e5eb9294efe5e3676aeaf3f4e2b2" alt="The Strokes" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="match-socials">
+                        <a href="https://open.spotify.com/user/sarahk.music" target="_blank" class="social-tag social-spotify">
+                            <span class="material-symbols-outlined">graphic_eq</span>
+                            sarahk.music
+                        </a>
+                        <a href="https://instagram.com/sarahk" target="_blank" class="social-tag social-instagram">
+                            <span class="material-symbols-outlined">alternate_email</span>
+                            sarahk
+                        </a>
+                    </div>
+                    <div class="match-genres">
+                        <span class="genre-tag">Indie</span>
+                        <span class="genre-tag">Alternative</span>
+                        <span class="genre-tag">Rock</span>
+                    </div>
+                    <div class="match-footer">
+                        <a href="#" class="match-profile-link">
+                            <span class="material-symbols-outlined">person_search</span>
+                            View profile
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Tom W. -->
+                <div class="match-card">
+                    <div class="match-top">
+                        <div class="match-avatar">TO</div>
+                        <div class="match-info">
+                            <a href="#" class="match-name">Tom W.</a>
+                            <p class="match-city">
+                                <span class="material-symbols-outlined">location_on</span>
+                                Kraków
+                            </p>
+                            <p class="match-date">Matched Apr 28, 2025</p>
+                        </div>
+                        <div class="match-artists">
+                            <div class="artist-stack">
+                                <div class="artist-stack-item" style="z-index: 3;">
+                                    <img src="https://i.scdn.co/image/ab6761610000e5eb4aab07fa53f5888b1e9a3def" alt="Frank Ocean" />
+                                </div>
+                                <div class="artist-stack-item" style="z-index: 4;">
+                                    <img src="https://i.scdn.co/image/ab6761610000e5eb68f6e5892075d7f22615c7f" alt="Kendrick" />
+                                </div>
+                                <div class="artist-stack-item" style="z-index: 5;">
+                                    <img src="https://i.scdn.co/image/ab6761610000e5eb55d39ab992e1847dc01cd56" alt="Miles Davis" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="match-socials">
+                        <a href="https://instagram.com/tomw" target="_blank" class="social-tag social-instagram">
+                            <span class="material-symbols-outlined">alternate_email</span>
+                            tomw
+                        </a>
+                    </div>
+                    <div class="match-genres">
+                        <span class="genre-tag">Jazz</span>
+                        <span class="genre-tag">Soul</span>
+                        <span class="genre-tag">R&B</span>
+                    </div>
+                    <div class="match-footer">
+                        <a href="#" class="match-profile-link">
+                            <span class="material-symbols-outlined">person_search</span>
+                            View profile
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Mia R. -->
+                <div class="match-card">
+                    <div class="match-top">
+                        <div class="match-avatar">MI</div>
+                        <div class="match-info">
+                            <a href="#" class="match-name">Mia R.</a>
+                            <p class="match-city">
+                                <span class="material-symbols-outlined">location_on</span>
+                                Gdańsk
+                            </p>
+                            <p class="match-date">Matched Apr 15, 2025</p>
+                        </div>
+                        <div class="match-artists">
+                            <div class="artist-stack">
+                                <div class="artist-stack-item" style="z-index: 3;">
+                                    <img src="https://i.scdn.co/image/ab6761610000e5eb1ba8fc5f5e7d48f7e658cf81" alt="Daft Punk" />
+                                </div>
+                                <div class="artist-stack-item" style="z-index: 4;">
+                                    <img src="https://i.scdn.co/image/ab6761610000e5eb23c4e0a9ea8d4b06e75c0e0" alt="Disclosure" />
+                                </div>
+                                <div class="artist-stack-item" style="z-index: 5;">
+                                    <img src="https://i.scdn.co/image/ab6761610000e5eb4293385d324db8558179afd9" alt="Bicep" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="match-socials">
+                        <a href="https://open.spotify.com/user/mia.r" target="_blank" class="social-tag social-spotify">
+                            <span class="material-symbols-outlined">graphic_eq</span>
+                            mia.r
+                        </a>
+                    </div>
+                    <div class="match-genres">
+                        <span class="genre-tag">Electronic</span>
+                        <span class="genre-tag">House</span>
+                        <span class="genre-tag">Techno</span>
+                    </div>
+                    <div class="match-footer">
+                        <a href="#" class="match-profile-link">
+                            <span class="material-symbols-outlined">person_search</span>
+                            View profile
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+</div>
+</body>
+</html>
