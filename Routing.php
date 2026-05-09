@@ -6,6 +6,7 @@ require_once 'src/controllers/DiscoverController.php';
 require_once 'src/controllers/MatchesController.php';
 require_once 'src/controllers/ProfileController.php';
 require_once 'src/controllers/SettingsController.php';
+require_once 'src/controllers/OnboardingController.php';
 
 
 // TODO musimy zapewnic, ze utworzony 
@@ -71,6 +72,10 @@ class Routing {
                 break;
             case 'settings':
                 $controller = new SettingsController();
+                $controller->index();
+                break;
+            case 'onboarding':
+                $controller = new OnboardingController();
                 $controller->index();
                 break;
             default:

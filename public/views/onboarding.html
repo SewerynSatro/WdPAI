@@ -1,0 +1,158 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+    <?php include __DIR__ . '/partials/head.html'; ?>
+    <link rel="stylesheet" href="public/styles/partials/nav.css" />
+    <link rel="stylesheet" href="public/styles/onboarding.css" />
+</head>
+<body>
+
+<?php include __DIR__ . '/partials/nav.html'; ?>
+
+<main class="onboarding-main">
+    <div class="onboarding-wrap">
+
+        <h1 class="onboarding-title">Welcome to the Rhythm</h1>
+        <p class="onboarding-subtitle">Let's get your profile set up so you can start discovering music matches.</p>
+
+        <!-- Connect Spotify CTA -->
+        <div class="spotify-cta">
+            <div class="spotify-cta-left">
+                <span class="material-symbols-outlined">pause_circle</span>
+                <div>
+                    <p class="spotify-cta-label">Discovery Paused</p>
+                    <p class="spotify-cta-title">Connect Spotify to Start</p>
+                    <p class="spotify-cta-desc">Sync your listening history to discover new tracks and connect with others.</p>
+                </div>
+            </div>
+            <a href="/settings/providers/spotify/connect" class="btn-connect">
+                <span class="material-symbols-outlined">link</span>
+                Connect Spotify
+            </a>
+        </div>
+
+        <!-- Form -->
+        <form method="POST" action="\onboarding">
+            <input type="hidden" name="latitude" id="lat" value="">
+            <input type="hidden" name="longitude" id="lng" value="">
+
+            <!-- Personal Details -->
+            <div class="onboarding-card">
+                <h2 class="onboarding-card-title">
+                    <span class="material-symbols-outlined">person</span>
+                    Personal Details
+                </h2>
+                <div class="onboarding-grid">
+                    <div class="settings-field">
+                        <label class="settings-label">Display name</label>
+                        <input class="settings-input" type="text" name="display_name" placeholder="Your name" />
+                    </div>
+                    <div class="settings-field">
+                        <label class="settings-label">Email</label>
+                        <input class="settings-input" type="email" name="email" placeholder="you@example.com" />
+                    </div>
+                </div>
+
+                <div class="onboarding-section">
+                    <h3 class="onboarding-section-title">
+                        <span class="material-symbols-outlined">badge</span>
+                        Public profile
+                    </h3>
+                    <div class="onboarding-grid">
+                        <div class="settings-field settings-field-full">
+                            <label class="settings-label">Location</label>
+                            <button type="button" class="btn-location" onclick="getLocation()">
+                                <span class="material-symbols-outlined">my_location</span>
+                                <span id="loc-label">Allow Location Access</span>
+                            </button>
+                        </div>
+                        <div class="settings-field settings-field-full">
+                            <label class="settings-label">Bio</label>
+                            <textarea class="settings-input settings-textarea" name="bio" rows="3" placeholder="A short intro for your matches"></textarea>
+                        </div>
+                        <div class="settings-field">
+                            <label class="settings-label">City</label>
+                            <input class="settings-input" type="text" name="city" placeholder="Warsaw" />
+                        </div>
+                        <div class="settings-field">
+                            <label class="settings-label">Date of birth</label>
+                            <input class="settings-input" type="date" name="birth_date" required />
+                        </div>
+                        <div class="settings-field">
+                            <label class="settings-label">Gender</label>
+                            <select class="settings-input settings-select" name="gender">
+                                <option value="">Prefer not to say</option>
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                                <option value="non-binary">Non-binary</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="settings-field">
+                            <label class="settings-label">Looking for</label>
+                            <select class="settings-input settings-select" name="looking_for">
+                                <option value="everyone">Everyone</option>
+                                <option value="male">Men</option>
+                                <option value="female">Women</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Social Handles -->
+            <div class="onboarding-card">
+                <h2 class="onboarding-card-title">
+                    <span class="material-symbols-outlined" style="color: var(--secondary)">share</span>
+                    Social Handles
+                </h2>
+                <p class="onboarding-card-desc">For connecting with matches outside HeartBeat. (No in-app chat)</p>
+                <div class="onboarding-grid onboarding-grid-3">
+                    <div class="settings-field">
+                        <label class="settings-label">Instagram</label>
+                        <input class="settings-input" type="text" name="instagram_handle" placeholder="@username" />
+                    </div>
+                    <div class="settings-field">
+                        <label class="settings-label">Facebook</label>
+                        <input class="settings-input" type="text" name="facebook_handle" placeholder="Profile name" />
+                    </div>
+                    <div class="settings-field">
+                        <label class="settings-label">Spotify</label>
+                        <input class="settings-input" type="text" name="spotify_handle" placeholder="Username" />
+                    </div>
+                </div>
+            </div>
+
+        <!-- Progress -->
+        <div class="onboarding-progress">
+            <div class="progress-header">
+                <span>Progress</span>
+                <span class="progress-pct">33%</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: 33%"></div>
+            </div>
+            <p class="progress-note">Complete all steps to finish setup</p>
+        </div>
+
+    </div>
+</main>
+
+<script>
+    function getLocation() {
+        if (!navigator.geolocation) {
+            document.getElementById('loc-label').textContent = 'Not supported';
+            return;
+        }
+        document.getElementById('loc-label').textContent = 'Getting location...';
+        navigator.geolocation.getCurrentPosition(
+            p => {
+                document.getElementById('lat').value = p.coords.latitude;
+                document.getElementById('lng').value = p.coords.longitude;
+                document.getElementById('loc-label').textContent = '✓ Location captured';
+            },
+            () => { document.getElementById('loc-label').textContent = 'Access denied'; }
+        );
+    }
+</script>
+</body>
+</html>
