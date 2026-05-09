@@ -36,6 +36,8 @@ class Routing {
         switch($path) {
             case 'dashboard':
             case '':
+                include 'public/views/landing.html';
+                break;
             case 'login':
             case 'register':
                 $controller = Routing::$routes[$path]["controller"];
