@@ -2,40 +2,251 @@
 <html lang="en">
 <head>
     <?php include __DIR__ . '/partials/head.html'; ?>
-    <link rel="stylesheet" href="public/styles/dashboard.css" />
-    <link rel="stylesheet" href="public/styles/discover.css" />
     <link rel="stylesheet" href="public/styles/partials/sidebar.css" />
+    <link rel="stylesheet" href="public/styles/discover.css" />
 </head>
 <body>
 <div class="dashboard-layout">
 
     <?php include __DIR__ . '/partials/sidebar.html'; ?>
-
     <main class="dashboard-main">
-        <h1 class="page-title">Discover</h1>
+        <div class="discover-wrap">
 
-        <div class="discover-card">
-            <div class="profile-photo">
-                <span class="material-symbols-outlined">person</span>
+        <!-- Nagłówek profilu -->
+        <section class="profile-header">
+            <div class="profile-header-info">
+                <span class="profile-label">Active Profile</span>
+                <h1 class="profile-name">Anna, 24</h1>
+                <div class="profile-chips">
+                    <div class="profile-chip">
+                        <span class="material-symbols-outlined">location_on</span>
+                        Warsaw
+                    </div>
+                </div>
+                <div class="dna-tags" style="margin-top: 0.625rem;">
+                    <span class="dna-tag">Indie</span>
+                    <span class="dna-tag">Alternative</span>
+                    <span class="dna-tag">Rock</span>
+                </div>
             </div>
-            <div class="profile-info">
-                <h2>Anna, 24</h2>
-                <p class="profile-location">
-                    <span class="material-symbols-outlined">location_on</span>
-                    Warsaw
-                </p>
-                <p class="profile-bio">Coffee lover, traveler and music enthusiast.</p>
+
+            <div class="profile-header-right">
+                <div class="sync-circles">
+                    <div class="sync-circle-wrap">
+                        <div class="sync-circle">
+                            <svg viewBox="0 0 160 160">
+                                <circle cx="80" cy="80" r="72" fill="none" stroke="rgba(141,246,136,0.1)" stroke-width="6"/>
+                                <circle cx="80" cy="80" r="72" fill="none" stroke="url(#g1)" stroke-width="6" stroke-linecap="round" stroke-dasharray="339 452"/>
+                                <defs>
+                                    <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="0%">
+                                        <stop offset="0%" stop-color="#F650BD"/>
+                                        <stop offset="100%" stop-color="#8DF688"/>
+                                    </linearGradient>
+                                </defs>
+                            </svg>
+                            <div class="sync-circle-inner">
+                                <span class="sync-pct">75%</span>
+                                <span class="sync-label">In Sync</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mini-circles">
+                        <div class="mini-circle-wrap">
+                            <div class="mini-circle">
+                                <svg viewBox="0 0 160 160">
+                                    <circle cx="80" cy="80" r="72" fill="none" stroke="rgba(141,246,136,0.1)" stroke-width="8"/>
+                                    <circle cx="80" cy="80" r="72" fill="none" stroke="url(#g2)" stroke-width="8" stroke-linecap="round" stroke-dasharray="339 452"/>
+                                    <defs>
+                                        <linearGradient id="g2" x1="0%" y1="0%" x2="100%" y2="0%">
+                                            <stop offset="0%" stop-color="#F650BD"/>
+                                            <stop offset="100%" stop-color="#8DF688"/>
+                                        </linearGradient>
+                                    </defs>
+                                </svg>
+                                <div class="mini-circle-inner">
+                                    <span class="mini-pct">75%</span>
+                                </div>
+                            </div>
+                            <span class="mini-label">Shared Taste</span>
+                        </div>
+
+                        <div class="mini-circle-wrap">
+                            <div class="mini-circle">
+                                <svg viewBox="0 0 160 160">
+                                    <circle cx="80" cy="80" r="72" fill="none" stroke="rgba(141,246,136,0.1)" stroke-width="8"/>
+                                    <circle cx="80" cy="80" r="72" fill="none" stroke="url(#g3)" stroke-width="8" stroke-linecap="round" stroke-dasharray="271 452"/>
+                                    <defs>
+                                        <linearGradient id="g3" x1="0%" y1="0%" x2="100%" y2="0%">
+                                            <stop offset="0%" stop-color="#F650BD"/>
+                                            <stop offset="100%" stop-color="#8DF688"/>
+                                        </linearGradient>
+                                    </defs>
+                                </svg>
+                                <div class="mini-circle-inner">
+                                    <span class="mini-pct">60%</span>
+                                </div>
+                            </div>
+                            <span class="mini-label">Genre Match</span>
+                        </div>
+
+                        <div class="mini-circle-wrap">
+                            <div class="mini-circle">
+                                <svg viewBox="0 0 160 160">
+                                    <circle cx="80" cy="80" r="72" fill="none" stroke="rgba(141,246,136,0.1)" stroke-width="8"/>
+                                    <circle cx="80" cy="80" r="72" fill="none" stroke="url(#g4)" stroke-width="8" stroke-linecap="round" stroke-dasharray="370 452"/>
+                                    <defs>
+                                        <linearGradient id="g4" x1="0%" y1="0%" x2="100%" y2="0%">
+                                            <stop offset="0%" stop-color="#F650BD"/>
+                                            <stop offset="100%" stop-color="#8DF688"/>
+                                        </linearGradient>
+                                    </defs>
+                                </svg>
+                                <div class="mini-circle-inner">
+                                    <span class="mini-pct">82%</span>
+                                </div>
+                            </div>
+                            <span class="mini-label">Vibe Match</span>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="discover-actions">
-                <button class="action-btn action-pass">
-                    <span class="material-symbols-outlined">close</span>
-                </button>
-                <button class="action-btn action-like">
-                    <span class="material-symbols-outlined">favorite</span>
-                </button>
-            </div>
+        </section>
+
+        <!-- Przyciski akcji -->
+
+        <div class="discover-actions">
+            <button class="action-btn action-pass">
+                <span class="material-symbols-outlined">close</span>
+                Pass
+            </button>
+            <button class="action-btn action-like">
+                <span class="material-symbols-outlined">favorite</span>
+                Connect
+            </button>
         </div>
 
+        <!-- Sekcja muzyczna -->
+        <div class="discover-grid">
+
+            <!-- Lewa kolumna -->
+            <div class="discover-col">
+
+                <!-- Lifetime Influence -->
+                <section class="influence-banner">
+                    <div class="influence-bg" style="background-image: url('https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800&h=300&fit=crop')"></div>
+                    <div class="influence-overlay"></div>
+                    <div class="influence-text">
+                        <span class="influence-label">Lifetime Influence</span>
+                        <h2 class="influence-name">THE STROKES</h2>
+                        <div class="influence-sub">
+                            <span class="material-symbols-outlined">star_rate</span>
+                            Signature Catalog
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Auditory DNA -->
+                <section class="music-section">
+                    <div class="music-section-header">
+                        <h3>Auditory DNA <span>6M Range</span></h3>
+                    </div>
+                    <div class="artists-grid">
+                        <?php
+            $artists = ['Arctic Monkeys', 'Tame Impala', 'Radiohead', 'Vampire Weekend', 'The Killers'];
+            foreach ($artists as $artist):
+            ?>
+                        <div class="artist-card">
+                            <div class="artist-photo">
+                                <span class="material-symbols-outlined">person</span>
+                            </div>
+                            <span class="artist-name"><?= $artist ?></span>
+                        </div>
+                        <?php endforeach; ?>
+                    </div>
+                </section>
+
+                <!-- Tracks grid: 3 kolumny -->
+                <div class="tracks-grid">
+
+                    <section class="music-section">
+                        <div class="music-section-header">
+                            <h3>All Time <span>Long Term</span></h3>
+                        </div>
+                        <?php
+            $longTerm = [
+                ['name' => 'Last Nite', 'artist' => 'The Strokes'],
+                        ['name' => 'Reptilia', 'artist' => 'The Strokes'],
+                        ['name' => 'Do I Wanna Know?', 'artist' => 'Arctic Monkeys'],
+                        ];
+                        foreach ($longTerm as $track):
+                        ?>
+                        <div class="track-row">
+                            <div class="track-thumb">
+                                <span class="material-symbols-outlined">album</span>
+                            </div>
+                            <div class="track-info">
+                                <p class="track-name"><?= $track['name'] ?></p>
+                                <p class="track-artist"><?= $track['artist'] ?></p>
+                            </div>
+                        </div>
+                        <?php endforeach; ?>
+                    </section>
+
+                    <section class="music-section">
+                        <div class="music-section-header">
+                            <h3>Recent Faves <span>Mid Term</span></h3>
+                        </div>
+                        <?php
+            $midTerm = [
+                ['name' => 'Electric Feel', 'artist' => 'MGMT'],
+                        ['name' => 'Let It Happen', 'artist' => 'Tame Impala'],
+                        ['name' => 'R U Mine?', 'artist' => 'Arctic Monkeys'],
+                        ];
+                        foreach ($midTerm as $track):
+                        ?>
+                        <div class="track-row">
+                            <div class="track-thumb">
+                                <span class="material-symbols-outlined">album</span>
+                            </div>
+                            <div class="track-info">
+                                <p class="track-name"><?= $track['name'] ?></p>
+                                <p class="track-artist"><?= $track['artist'] ?></p>
+                            </div>
+                        </div>
+                        <?php endforeach; ?>
+                    </section>
+
+                    <section class="music-section">
+                        <div class="music-section-header">
+                            <h3>Just Played <span>Recent</span></h3>
+                        </div>
+                        <?php
+            $recent = [
+                ['name' => 'Fluorescent Adolescent', 'artist' => 'Arctic Monkeys'],
+                        ['name' => 'The Less I Know', 'artist' => 'Tame Impala'],
+                        ['name' => 'New York City Cops', 'artist' => 'The Strokes'],
+                        ];
+                        foreach ($recent as $track):
+                        ?>
+                        <div class="track-row">
+                            <div class="track-thumb">
+                                <span class="material-symbols-outlined">album</span>
+                            </div>
+                            <div class="track-info">
+                                <p class="track-name"><?= $track['name'] ?></p>
+                                <p class="track-artist"><?= $track['artist'] ?></p>
+                            </div>
+                        </div>
+                        <?php endforeach; ?>
+                    </section>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
     </main>
 </div>
 </body>
