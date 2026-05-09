@@ -39,3 +39,41 @@ a {
   font-variation-settings: 'FILL' 0, 'wght' 400;
   vertical-align: middle;
 }
+
+/* --- Background blobs --- */
+body::before {
+  content: '';
+  position: fixed;
+  top: -10%;
+  right: -5%;
+  width: 500px;
+  height: 500px;
+  background: rgba(86, 47, 84, 0.30);
+  border-radius: 50%;
+  filter: blur(100px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  bottom: -10%;
+  left: -5%;
+  width: 400px;
+  height: 400px;
+  background: rgba(246, 80, 189, 0.12);
+  border-radius: 50%;
+  filter: blur(100px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.login-page,
+.register-page,
+.landing-nav,
+.landing-main,
+.dashboard-layout {
+  position: relative;
+  z-index: 1;
+}

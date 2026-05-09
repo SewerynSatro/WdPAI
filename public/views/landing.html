@@ -17,32 +17,115 @@
 </nav>
 
 <main class="landing-main">
-    <div class="hero">
-        <div class="hero-badge">
-            <span class="badge-dot"></span>
-            Now Available on Web
+    <div class="landing-grid">
+
+        <!-- Lewa kolumna: hero -->
+        <div class="hero">
+            <div class="hero-badge">
+                <span class="badge-dot"></span>
+                Now Available on Web
+            </div>
+
+            <h1>
+                <span class="gradient-text">In Sync.</span><br>In Love.
+            </h1>
+
+            <p class="hero-subtitle">
+                Match based on your music taste. The first dating app that connects
+                you strictly through your Spotify library. Stop swiping on faces,
+                start swiping on vibes.
+            </p>
+
+            <div class="hero-actions">
+                <a href="/register" class="btn-primary">
+                    Get Started
+                    <span class="material-symbols-outlined">arrow_forward</span>
+                </a>
+                <a href="/login" class="btn-outline">
+                    Existing User? Login
+                </a>
+            </div>
+
+            <div class="hero-avatars">
+                <div class="avatars">
+                    <div class="avatar avatar-purple"></div>
+                    <div class="avatar avatar-dark"></div>
+                    <div class="avatar avatar-pink"></div>
+                    <div class="avatar avatar-count">+2k</div>
+                </div>
+                <span>Matches made today</span>
+            </div>
         </div>
 
-        <h1>
-            <span class="gradient-text">In Sync.</span><br>In Love.
-        </h1>
+        <!-- Prawa kolumna: kroki -->
+        <div class="steps">
+            <div class="step-card">
+                <div class="step-icon step-icon-primary">
+                    <span class="material-symbols-outlined">account_circle</span>
+                </div>
+                <div>
+                    <h3>Create Account</h3>
+                    <p>Sign up in seconds and set up your dating profile.</p>
+                </div>
+            </div>
 
-        <p class="hero-subtitle">
-            Match based on your music taste. The first dating app that connects
-            you strictly through your Spotify library. Stop swiping on faces,
-            start swiping on vibes.
-        </p>
+            <div class="step-card">
+                <div class="step-icon step-icon-spotify">
+                    <span class="material-symbols-outlined">library_music</span>
+                </div>
+                <div>
+                    <h3>Connect Spotify</h3>
+                    <p>Link your music library securely. We analyze your listening habits.</p>
+                </div>
+            </div>
 
-        <div class="hero-actions">
-            <a href="/register" class="btn-primary">
-                Get Started
-                <span class="material-symbols-outlined">arrow_forward</span>
-            </a>
-            <a href="/login" class="btn-outline">
-                Existing User? Login
-            </a>
+            <div class="step-card">
+                <div class="step-icon step-icon-secondary">
+                    <span class="material-symbols-outlined">swipe_right</span>
+                </div>
+                <div>
+                    <h3>Swipe & Match</h3>
+                    <p>Browse profiles curated by algorithm. Swipe right on vibes.</p>
+                </div>
+            </div>
+
+            <div class="eq-bars" id="eq-bars">
+                <div class="eq-bar" style="height:18px"></div>
+                <div class="eq-bar" style="height:36px"></div>
+                <div class="eq-bar" style="height:44px"></div>
+                <div class="eq-bar" style="height:45px"></div>
+                <div class="eq-bar" style="height:44px"></div>
+                <div class="eq-bar" style="height:36px"></div>
+                <div class="eq-bar" style="height:18px"></div>
+            </div>
         </div>
+
     </div>
 </main>
+
+<script>
+    !function(){
+        const bars = document.querySelectorAll('#eq-bars .eq-bar'),
+            heart = [-24,-16,-8,0,-8,-16,-24],
+            freq  = [1.3,1.7,2.1,1.5,1.9,1.4,1.6],
+            phase = [0,.7,1.4,2.1,2.8,3.5,4.2],
+            cycle = 5000;
+        function ss(t){ return t*t*(3-2*t); }
+        !function loop(now){
+            const t = (now % cycle) / cycle;
+            let energy = 0;
+            if(t>.15 && t<.75){
+                if(t<.25) energy = ss((t-.15)/.1);
+                else if(t<.65) energy = 1;
+                else energy = 1 - ss((t-.65)/.1);
+            }
+            bars.forEach((b,i) => {
+                const bounce = Math.sin(now*.003*freq[i]+phase[i])*13;
+                b.style.transform = 'translateY('+(heart[i]+bounce*energy)+'px)';
+            });
+            requestAnimationFrame(loop);
+        }(0);
+    }();
+</script>
 </body>
 </html>
