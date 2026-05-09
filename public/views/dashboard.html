@@ -7,42 +7,7 @@
 <body>
 <div class="dashboard-layout">
 
-  <aside class="sidebar">
-    <div class="sidebar-top">
-      <a class="sidebar-brand" href="/dashboard">
-        <span class="material-symbols-outlined">favorite</span>
-        HeartBeat
-      </a>
-      <ul class="sidebar-nav">
-        <li>
-          <a href="/dashboard" class="active">
-            <span class="material-symbols-outlined">explore</span>
-            Discover
-          </a>
-        </li>
-        <li>
-          <a href="/dashboard">
-            <span class="material-symbols-outlined">favorite</span>
-            Matches
-          </a>
-        </li>
-        <li>
-          <a href="/dashboard">
-            <span class="material-symbols-outlined">person</span>
-            Profile
-          </a>
-        </li>
-      </ul>
-    </div>
-
-    <div class="sidebar-bottom">
-      <div class="sidebar-avatar"><?= strtoupper(substr($userEmail ?? 'U', 0, 2)) ?></div>
-      <span class="sidebar-username"><?= $userEmail ?? 'User' ?></span>
-      <a href="/logout" class="logout-btn">
-        <span class="material-symbols-outlined">logout</span>
-      </a>
-    </div>
-  </aside>
+  <?php include __DIR__ . '/partials/sidebar.html'; ?>
 
   <main class="dashboard-main">
     <h1>Witaj!</h1>

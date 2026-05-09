@@ -1,0 +1,104 @@
+﻿.page-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 2rem;
+}
+
+.discover-card {
+    background: rgba(42, 63, 56, 0.50);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    width: 100%;
+    max-width: 380px;
+    overflow: hidden;
+    backdrop-filter: blur(8px);
+}
+
+.profile-photo {
+    width: 100%;
+    height: 320px;
+    background: linear-gradient(135deg, var(--accent-purple), var(--secondary));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.profile-photo .material-symbols-outlined {
+    font-size: 6rem;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.profile-info {
+    padding: 1.25rem 1.25rem 0.75rem;
+}
+
+.profile-info h2 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 0.25rem;
+}
+
+.profile-location {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.8125rem;
+    color: var(--text-muted);
+    margin-bottom: 0.75rem;
+}
+
+.profile-location .material-symbols-outlined {
+    font-size: 1rem;
+    color: var(--primary);
+}
+
+.profile-bio {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+}
+
+.discover-actions {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    padding: 1.25rem;
+}
+
+.action-btn {
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.action-btn:hover {
+    transform: scale(1.1);
+}
+
+.action-pass {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text-muted);
+}
+
+.action-pass:hover {
+    background: rgba(233, 69, 96, 0.15);
+    color: #ff7b93;
+}
+
+.action-like {
+    background: rgba(141, 246, 136, 0.15);
+    color: var(--primary);
+    box-shadow: var(--glow-primary);
+}
+
+.action-like:hover {
+    background: rgba(141, 246, 136, 0.25);
+}

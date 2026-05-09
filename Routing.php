@@ -2,6 +2,7 @@
 
 require_once 'src/controllers/SecurityController.php';
 require_once 'src/controllers/DashboardController.php';
+require_once 'src/controllers/DiscoverController.php';
 
 // TODO musimy zapewnic, ze utworzony 
 // obiekt kontrollera ma tylko jedna instancję - SINGLETON
@@ -48,6 +49,10 @@ class Routing {
             case 'logout':
                 $controller = new SecurityController();
                 $controller->logout();
+                break;
+            case 'discover':
+                $controller = new DiscoverController();
+                $controller->index();
                 break;
             default:
                 include 'public/views/404.html';

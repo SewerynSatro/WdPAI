@@ -18,6 +18,11 @@ class DashboardController extends AppController {
         $usersRepository = new UsersRepository();
         $users = $usersRepository->getUsers();
 
-        return $this->render("dashboard", ["title" => $title, "users" => $users, "userEmail" => $_SESSION['user_email']]);
+        return $this->render('dashboard', [
+            'title'      => $title,
+            'users'      => $users,
+            'userEmail'  => $_SESSION['user_email'],
+            'activePage' => 'dashboard'
+        ]);
     }
 }

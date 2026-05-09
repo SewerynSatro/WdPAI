@@ -1,0 +1,35 @@
+﻿<aside class="sidebar">
+    <div class="sidebar-top">
+        <a class="sidebar-brand" href="/discover">
+            <img src="public/assets/img/logo.svg" alt="HeartBeat" style="width:1.75rem;height:1.75rem;" />
+            HeartBeat
+        </a>
+        <ul class="sidebar-nav">
+            <li>
+                <a href="/discover" <?= ($activePage ?? '') === 'discover' ? 'class="active"' : '' ?>>
+                <span class="material-symbols-outlined">explore</span>
+                Discover
+                </a>
+            </li>
+            <li>
+                <a href="/matches" <?= ($activePage ?? '') === 'matches' ? 'class="active"' : '' ?>>
+                <span class="material-symbols-outlined">favorite</span>
+                Matches
+                </a>
+            </li>
+            <li>
+                <a href="/profile" <?= ($activePage ?? '') === 'profile' ? 'class="active"' : '' ?>>
+                <span class="material-symbols-outlined">person</span>
+                Profile
+                </a>
+            </li>
+        </ul>
+    </div>
+    <div class="sidebar-bottom">
+        <div class="sidebar-avatar"><?= strtoupper(substr($userEmail ?? 'U', 0, 2)) ?></div>
+        <span class="sidebar-username"><?= $userEmail ?? 'User' ?></span>
+        <a href="/logout" class="logout-btn">
+            <span class="material-symbols-outlined">logout</span>
+        </a>
+    </div>
+</aside>
