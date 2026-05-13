@@ -37,7 +37,11 @@ class Routing {
     ];
 
     public static function run(string $path) {
-        // TODO sprawdzać za pomoca array_key_exists
+        if (preg_match('/^matches\/(\d+)$/', $path, $m)) {
+            $controller = new MatchesController();
+            $controller->show((int)$m[1]);
+            return;
+        }
         switch($path) {
             case '':
                 include 'public/views/landing.html';
