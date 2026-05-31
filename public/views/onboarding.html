@@ -1,4 +1,4 @@
-﻿<!doctype html>
+﻿﻿<!doctype html>
 <html lang="en">
 <head>
     <?php include __DIR__ . '/partials/head.html'; ?>
@@ -32,7 +32,7 @@
         </div>
 
         <!-- Form -->
-        <form method="POST" action="\onboarding">
+        <form method="POST" action="/onboarding" id="onboarding-form">
             <input type="hidden" name="latitude" id="lat" value="">
             <input type="hidden" name="longitude" id="lng" value="">
 
@@ -45,11 +45,11 @@
                 <div class="onboarding-grid">
                     <div class="settings-field">
                         <label class="settings-label">Display name</label>
-                        <input class="settings-input" type="text" name="display_name" placeholder="Your name" />
+                        <input class="settings-input" type="text" name="display_name" placeholder="Your name" value="<?= htmlspecialchars($user['display_name'] ?? trim(($user['firstname'] ?? '') . ' ' . ($user['lastname'] ?? '')), ENT_QUOTES, 'UTF-8') ?>" />
                     </div>
                     <div class="settings-field">
                         <label class="settings-label">Email</label>
-                        <input class="settings-input" type="email" name="email" placeholder="you@example.com" />
+                        <input class="settings-input" type="email" name="email" placeholder="you@example.com" value="<?= htmlspecialchars($user['email'] ?? $userEmail ?? '', ENT_QUOTES, 'UTF-8') ?>" />
                     </div>
                 </div>
 
@@ -68,32 +68,32 @@
                         </div>
                         <div class="settings-field settings-field-full">
                             <label class="settings-label">Bio</label>
-                            <textarea class="settings-input settings-textarea" name="bio" rows="3" placeholder="A short intro for your matches"></textarea>
+                            <textarea class="settings-input settings-textarea" name="bio" rows="3" placeholder="A short intro for your matches"><?= htmlspecialchars($profile['bio'] ?? '', ENT_QUOTES, 'UTF-8') ?></textarea>
                         </div>
                         <div class="settings-field">
                             <label class="settings-label">City</label>
-                            <input class="settings-input" type="text" name="city" placeholder="Warsaw" />
+                            <input class="settings-input" type="text" name="city" placeholder="Warsaw" value="<?= htmlspecialchars($profile['city'] ?? '', ENT_QUOTES, 'UTF-8') ?>" />
                         </div>
                         <div class="settings-field">
                             <label class="settings-label">Date of birth</label>
-                            <input class="settings-input" type="date" name="birth_date" required />
+                            <input class="settings-input" type="date" name="birth_date" required value="<?= htmlspecialchars($profile['birth_date'] ?? '', ENT_QUOTES, 'UTF-8') ?>" />
                         </div>
                         <div class="settings-field">
                             <label class="settings-label">Gender</label>
                             <select class="settings-input settings-select" name="gender">
-                                <option value="">Prefer not to say</option>
-                                <option value="male">Male</option>
-                                <option value="female">Female</option>
-                                <option value="non-binary">Non-binary</option>
-                                <option value="other">Other</option>
+                                <option value="" <?= (($profile['gender'] ?? '') === '') ? 'selected' : '' ?>>Prefer not to say</option>
+                                <option value="male" <?= (($profile['gender'] ?? '') === 'male') ? 'selected' : '' ?>>Male</option>
+                                <option value="female" <?= (($profile['gender'] ?? '') === 'female') ? 'selected' : '' ?>>Female</option>
+                                <option value="non-binary" <?= (($profile['gender'] ?? '') === 'non-binary') ? 'selected' : '' ?>>Non-binary</option>
+                                <option value="other" <?= (($profile['gender'] ?? '') === 'other') ? 'selected' : '' ?>>Other</option>
                             </select>
                         </div>
                         <div class="settings-field">
                             <label class="settings-label">Looking for</label>
                             <select class="settings-input settings-select" name="looking_for">
-                                <option value="everyone">Everyone</option>
-                                <option value="male">Men</option>
-                                <option value="female">Women</option>
+                                <option value="everyone" <?= (($profile['looking_for'] ?? 'everyone') === 'everyone') ? 'selected' : '' ?>>Everyone</option>
+                                <option value="male" <?= (($profile['looking_for'] ?? '') === 'male') ? 'selected' : '' ?>>Men</option>
+                                <option value="female" <?= (($profile['looking_for'] ?? '') === 'female') ? 'selected' : '' ?>>Women</option>
                             </select>
                         </div>
                     </div>
@@ -109,30 +109,36 @@
                 <div class="onboarding-grid onboarding-grid-3">
                     <div class="settings-field">
                         <label class="settings-label">Instagram</label>
-                        <input class="settings-input" type="text" name="instagram_handle" placeholder="@username" />
+                        <input class="settings-input" type="text" name="instagram_handle" placeholder="@username" value="<?= htmlspecialchars($profile['instagram_handle'] ?? '', ENT_QUOTES, 'UTF-8') ?>" />
                     </div>
                     <div class="settings-field">
                         <label class="settings-label">Facebook</label>
-                        <input class="settings-input" type="text" name="facebook_handle" placeholder="Profile name" />
+                        <input class="settings-input" type="text" name="facebook_handle" placeholder="Profile name" value="<?= htmlspecialchars($profile['facebook_handle'] ?? '', ENT_QUOTES, 'UTF-8') ?>" />
                     </div>
                     <div class="settings-field">
                         <label class="settings-label">Spotify</label>
-                        <input class="settings-input" type="text" name="spotify_handle" placeholder="Username" />
+                        <input class="settings-input" type="text" name="spotify_handle" placeholder="Username" value="<?= htmlspecialchars($profile['spotify_handle'] ?? '', ENT_QUOTES, 'UTF-8') ?>" />
                     </div>
                 </div>
             </div>
+
+            <button type="submit" class="btn-save-profile">
+                <span class="material-symbols-outlined">check_circle</span>
+                Complete Profile
+            </button>
 
         <!-- Progress -->
         <div class="onboarding-progress">
             <div class="progress-header">
                 <span>Progress</span>
-                <span class="progress-pct">33%</span>
+                <span class="progress-pct" id="progress-pct">0%</span>
             </div>
             <div class="progress-bar">
-                <div class="progress-fill" style="width: 33%"></div>
+                <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
             </div>
             <p class="progress-note">Complete all steps to finish setup</p>
         </div>
+        </form>
 
     </div>
 </main>
@@ -149,10 +155,51 @@
                 document.getElementById('lat').value = p.coords.latitude;
                 document.getElementById('lng').value = p.coords.longitude;
                 document.getElementById('loc-label').textContent = '✓ Location captured';
+                updateProgress();
             },
             () => { document.getElementById('loc-label').textContent = 'Access denied'; }
         );
     }
+
+    function updateProgress() {
+        const form = document.getElementById('onboarding-form');
+        const fields = [
+            'display_name',
+            'email',
+            'bio',
+            'city',
+            'birth_date',
+            'gender',
+            'looking_for',
+            'instagram_handle',
+            'facebook_handle',
+            'spotify_handle'
+        ];
+        let completed = 0;
+
+        fields.forEach(name => {
+            const field = form.elements[name];
+            if (field && field.value.trim() !== '') {
+                completed++;
+            }
+        });
+
+        if (form.elements.latitude.value.trim() !== '' && form.elements.longitude.value.trim() !== '') {
+            completed++;
+        }
+
+        const total = fields.length + 1;
+        const percent = Math.round((completed / total) * 100);
+        document.getElementById('progress-pct').textContent = `${percent}%`;
+        document.getElementById('progress-fill').style.width = `${percent}%`;
+    }
+
+    document.querySelectorAll('#onboarding-form input, #onboarding-form textarea, #onboarding-form select')
+        .forEach(field => {
+            field.addEventListener('input', updateProgress);
+            field.addEventListener('change', updateProgress);
+        });
+    updateProgress();
 </script>
 </body>
 </html>

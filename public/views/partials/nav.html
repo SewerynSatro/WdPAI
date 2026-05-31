@@ -4,7 +4,12 @@
     HeartBeat
   </a>
   <div class="nav-actions">
+    <?php if (isset($_SESSION['user_id'])): ?>
+    <a href="/discover" class="btn-nav-login">Discover</a>
+    <a href="/logout" class="btn-nav-register">Logout</a>
+    <?php else: ?>
     <a href="/login" class="btn-nav-login">Login</a>
     <a href="/register" class="btn-nav-register">Register</a>
+    <?php endif; ?>
   </div>
 </nav>
