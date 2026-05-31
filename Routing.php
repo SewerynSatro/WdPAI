@@ -37,11 +37,51 @@ class Routing {
     ];
 
     public static function run(string $path) {
+        $path = str_replace('\\', '/', $path);
+        $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
+
         if (preg_match('/^matches\/(\d+)$/', $path, $m)) {
             $controller = new MatchesController();
             $controller->show((int)$m[1]);
             return;
         }
+
+        if ($method === 'POST') {
+            switch ($path) {
+                case 'login':
+                    $controller = new SecurityController();
+                    $controller->login();
+                    return;
+                case 'register':
+                    $controller = new SecurityController();
+                    $controller->register();
+                    return;
+                case 'logout':
+                    $controller = new SecurityController();
+                    $controller->logout();
+                    return;
+                case 'onboarding':
+                    $controller = new OnboardingController();
+                    $controller->save();
+                    return;
+                case 'discover/swipe':
+                    $controller = new DiscoverController();
+                    $controller->swipe();
+                    return;
+                case 'settings/account':
+                    $controller = new SettingsController();
+                    $controller->updateAccount();
+                    return;
+                case 'settings/sync-music':
+                    $controller = new SettingsController();
+                    $controller->syncMusic();
+                    return;
+                default:
+                    include 'public/views/404.html';
+                    return;
+            }
+        }
+
         switch($path) {
             case '':
                 include 'public/views/landing.html';
@@ -77,6 +117,14 @@ class Routing {
             case 'settings':
                 $controller = new SettingsController();
                 $controller->index();
+                break;
+            case 'settings/providers/spotify/connect':
+                $controller = new SettingsController();
+                $controller->connectProvider('spotify');
+                break;
+            case 'settings/providers/spotify/callback':
+                $controller = new SettingsController();
+                $controller->providerCallback('spotify');
                 break;
             case 'onboarding':
                 $controller = new OnboardingController();

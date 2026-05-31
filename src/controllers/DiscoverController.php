@@ -18,4 +18,18 @@ class DiscoverController extends AppController {
             'activePage' => 'discover'
         ]);
     }
+
+    public function swipe() {
+        session_start();
+
+        if (!isset($_SESSION['user_id'])) {
+            $url = "http://$_SERVER[HTTP_HOST]";
+            header("Location: {$url}/login");
+            exit();
+        }
+
+        $url = "http://$_SERVER[HTTP_HOST]";
+        header("Location: {$url}/discover");
+        exit();
+    }
 }
