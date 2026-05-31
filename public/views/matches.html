@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="en">
 <head>
     <?php include __DIR__ . '/partials/head.html'; ?>
@@ -16,7 +16,7 @@
             <h1 class="matches-title">Your Matches</h1>
             <p class="matches-subtitle">People who share your rhythm.</p>
 
-            <?php if (false): ?>
+            <?php if (empty($matches)): ?>
             <div class="matches-empty">
                 <div class="empty-logo">
                     <img src="public/assets/img/logo.svg" alt="HeartBeat" />
@@ -25,154 +25,79 @@
                 <p>...soon. Keep swiping to find your sync.</p>
                 <a href="/discover" class="btn-discover">Discover People</a>
             </div>
-            <?php endif; ?>
+            <?php else: ?>
 
             <div class="matches-list">
-
-                <!-- Sarah K. -->
+                <?php foreach ($matches as $match): ?>
+                <?php
+                    $partnerId = (int) $match['partner_id'];
+                    $partnerName = htmlspecialchars($match['partner_name'] ?? 'Unknown', ENT_QUOTES, 'UTF-8');
+                    $partnerCity = htmlspecialchars($match['partner_city'] ?? 'Unknown city', ENT_QUOTES, 'UTF-8');
+                    $partnerAge = !empty($match['partner_age']) ? ', ' . (int) $match['partner_age'] : '';
+                    $matchedAt = !empty($match['matched_at']) ? date('M j, Y', strtotime($match['matched_at'])) : '';
+                    $bio = htmlspecialchars($match['partner_bio'] ?? 'No bio yet.', ENT_QUOTES, 'UTF-8');
+                    $genres = $match['music']['top_genres'] ?? [];
+                    $artists = $match['music']['top_artists'] ?? [];
+                    $initials = strtoupper(substr(preg_replace('/[^a-z]/i', '', $match['partner_name'] ?? 'HB'), 0, 2));
+                ?>
                 <div class="match-card">
                     <div class="match-top">
-                        <div class="match-avatar">SA</div>
+                        <div class="match-avatar"><?= htmlspecialchars($initials ?: 'HB', ENT_QUOTES, 'UTF-8') ?></div>
                         <div class="match-info">
-                            <a href="#" class="match-name">Sarah K.</a>
+                            <a href="/matches/<?= $partnerId ?>" class="match-name"><?= $partnerName ?><?= $partnerAge ?></a>
                             <p class="match-city">
                                 <span class="material-symbols-outlined">location_on</span>
-                                Warsaw
+                                <?= $partnerCity ?>
                             </p>
-                            <p class="match-date">Matched May 3, 2025</p>
+                            <p class="match-date">Matched <?= htmlspecialchars($matchedAt, ENT_QUOTES, 'UTF-8') ?></p>
                         </div>
                         <div class="match-artists">
                             <div class="artist-stack">
-                                <div class="artist-stack-item" style="z-index: 3;">
-                                    <img src="https://i.scdn.co/image/ab6761610000e5eb6be070445b03e0b63147c2c1" alt="Arctic Monkeys" />
+                                <?php foreach (array_slice($artists, 0, 3) as $index => $artist): ?>
+                                <div class="artist-stack-item" style="z-index: <?= 3 + $index ?>;">
+                                    <?php if (!empty($artist['artist_image_url'])): ?>
+                                        <img src="<?= htmlspecialchars($artist['artist_image_url'], ENT_QUOTES, 'UTF-8') ?>" alt="<?= htmlspecialchars($artist['artist_name'] ?? '', ENT_QUOTES, 'UTF-8') ?>" />
+                                    <?php else: ?>
+                                        <span class="material-symbols-outlined">person</span>
+                                    <?php endif; ?>
                                 </div>
-                                <div class="artist-stack-item" style="z-index: 4;">
-                                    <img src="https://i.scdn.co/image/ab6761610000e5eb3fe0f7f47e9f1e8763ae0c31" alt="Tame Impala" />
-                                </div>
-                                <div class="artist-stack-item" style="z-index: 5;">
-                                    <img src="https://i.scdn.co/image/ab6761610000e5eb9294efe5e3676aeaf3f4e2b2" alt="The Strokes" />
-                                </div>
+                                <?php endforeach; ?>
                             </div>
                         </div>
                     </div>
                     <div class="match-socials">
-                        <a href="https://open.spotify.com/user/sarahk.music" target="_blank" class="social-tag social-spotify">
+                        <?php if (!empty($match['spotify_handle'])): ?>
+                        <a href="https://open.spotify.com/user/<?= rawurlencode($match['spotify_handle']) ?>" target="_blank" class="social-tag social-spotify">
                             <span class="material-symbols-outlined">graphic_eq</span>
-                            sarahk.music
+                            <?= htmlspecialchars($match['spotify_handle'], ENT_QUOTES, 'UTF-8') ?>
                         </a>
-                        <a href="https://instagram.com/sarahk" target="_blank" class="social-tag social-instagram">
+                        <?php endif; ?>
+                        <?php if (!empty($match['instagram_handle'])): ?>
+                        <a href="https://instagram.com/<?= rawurlencode(ltrim($match['instagram_handle'], '@')) ?>" target="_blank" class="social-tag social-instagram">
                             <span class="material-symbols-outlined">alternate_email</span>
-                            sarahk
+                            <?= htmlspecialchars(ltrim($match['instagram_handle'], '@'), ENT_QUOTES, 'UTF-8') ?>
                         </a>
+                        <?php endif; ?>
                     </div>
                     <div class="match-genres">
-
-                        <span class="genre-tag">Indie</span>
-                        <span class="genre-tag">Alternative</span>
-                        <span class="genre-tag">Rock</span>
+                        <?php foreach ($genres as $genre): ?>
+                            <span class="genre-tag"><?= htmlspecialchars($genre, ENT_QUOTES, 'UTF-8') ?></span>
+                        <?php endforeach; ?>
+                        <?php if (empty($genres)): ?>
+                            <span class="genre-tag">No music data</span>
+                        <?php endif; ?>
                     </div>
-                    <p class="match-bio">Coffee lover, traveler and music enthusiast. Always looking for the next great concert.</p>
+                    <p class="match-bio"><?= $bio ?></p>
                     <div class="match-footer">
-                        <a href="/matches/<?= $match['id'] ?? 1 ?>" class="match-profile-link">
+                        <a href="/matches/<?= $partnerId ?>" class="match-profile-link">
                             <span class="material-symbols-outlined">person_search</span>
                             View profile
                         </a>
                     </div>
                 </div>
-
-                <!-- Tom W. -->
-                <div class="match-card">
-                    <div class="match-top">
-                        <div class="match-avatar">TO</div>
-                        <div class="match-info">
-                            <a href="#" class="match-name">Tom W.</a>
-                            <p class="match-city">
-                                <span class="material-symbols-outlined">location_on</span>
-                                Kraków
-                            </p>
-                            <p class="match-date">Matched Apr 28, 2025</p>
-                        </div>
-                        <div class="match-artists">
-                            <div class="artist-stack">
-                                <div class="artist-stack-item" style="z-index: 3;">
-                                    <img src="https://i.scdn.co/image/ab6761610000e5eb4aab07fa53f5888b1e9a3def" alt="Frank Ocean" />
-                                </div>
-                                <div class="artist-stack-item" style="z-index: 4;">
-                                    <img src="https://i.scdn.co/image/ab6761610000e5eb68f6e5892075d7f22615c7f" alt="Kendrick" />
-                                </div>
-                                <div class="artist-stack-item" style="z-index: 5;">
-                                    <img src="https://i.scdn.co/image/ab6761610000e5eb55d39ab992e1847dc01cd56" alt="Miles Davis" />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="match-socials">
-                        <a href="https://instagram.com/tomw" target="_blank" class="social-tag social-instagram">
-                            <span class="material-symbols-outlined">alternate_email</span>
-                            tomw
-                        </a>
-                    </div>
-                    <div class="match-genres">
-                        <span class="genre-tag">Jazz</span>
-                        <span class="genre-tag">Soul</span>
-                        <span class="genre-tag">R&B</span>
-                    </div>
-                    <p class="match-bio">Coffee lover, traveler and music enthusiast. Always looking for the next great concert.</p>
-                    <div class="match-footer">
-                        <a href="/matches/<?= $match['id'] ?? 1 ?>" class="match-profile-link">
-                            <span class="material-symbols-outlined">person_search</span>
-                            View profile
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Mia R. -->
-                <div class="match-card">
-                    <div class="match-top">
-                        <div class="match-avatar">MI</div>
-                        <div class="match-info">
-                            <a href="#" class="match-name">Mia R.</a>
-                            <p class="match-city">
-                                <span class="material-symbols-outlined">location_on</span>
-                                Gdańsk
-                            </p>
-                            <p class="match-date">Matched Apr 15, 2025</p>
-                        </div>
-                        <div class="match-artists">
-                            <div class="artist-stack">
-                                <div class="artist-stack-item" style="z-index: 3;">
-                                    <img src="https://i.scdn.co/image/ab6761610000e5eb1ba8fc5f5e7d48f7e658cf81" alt="Daft Punk" />
-                                </div>
-                                <div class="artist-stack-item" style="z-index: 4;">
-                                    <img src="https://i.scdn.co/image/ab6761610000e5eb23c4e0a9ea8d4b06e75c0e0" alt="Disclosure" />
-                                </div>
-                                <div class="artist-stack-item" style="z-index: 5;">
-                                    <img src="https://i.scdn.co/image/ab6761610000e5eb4293385d324db8558179afd9" alt="Bicep" />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="match-socials">
-                        <a href="https://open.spotify.com/user/mia.r" target="_blank" class="social-tag social-spotify">
-                            <span class="material-symbols-outlined">graphic_eq</span>
-                            mia.r
-                        </a>
-                    </div>
-                    <div class="match-genres">
-                        <span class="genre-tag">Electronic</span>
-                        <span class="genre-tag">House</span>
-                        <span class="genre-tag">Techno</span>
-                    </div>
-                    <p class="match-bio">Coffee lover, traveler and music enthusiast. Always looking for the next great concert.</p>
-                    <div class="match-footer">
-                        <a href="/matches/<?= $match['id'] ?? 1 ?>" class="match-profile-link">
-                            <span class="material-symbols-outlined">person_search</span>
-                            View profile
-                        </a>
-                    </div>
-                </div>
-
+                <?php endforeach; ?>
             </div>
+            <?php endif; ?>
         </div>
     </main>
 </div>
