@@ -11,22 +11,53 @@
     <?php include __DIR__ . '/partials/sidebar.html'; ?>
     <main class="dashboard-main">
         <div class="discover-wrap">
+        <?php if (empty($candidate)): ?>
+            <section class="profile-header">
+                <div class="profile-header-info">
+                    <span class="profile-label">Discover</span>
+                    <h1 class="profile-name">No profiles yet</h1>
+                    <div class="profile-chips">
+                        <div class="profile-chip">
+                            <span class="material-symbols-outlined">person_search</span>
+                            Check back later
+                        </div>
+                    </div>
+                </div>
+            </section>
+        <?php else: ?>
+        <?php
+            $candidateName = htmlspecialchars($candidate['display_name'] ?? 'Unknown', ENT_QUOTES, 'UTF-8');
+            $candidateAge = $candidate['age'] ? ', ' . (int) $candidate['age'] : '';
+            $candidateCity = htmlspecialchars($candidate['city'] ?? 'Unknown city', ENT_QUOTES, 'UTF-8');
+            $genres = $musicPreview['top_genres'] ?? [];
+            $artists = $musicPreview['top_artists'] ?? [];
+            $tracks = $musicPreview['top_tracks'] ?? [];
+            $mainArtist = $artists[0]['artist_name'] ?? 'No music data yet';
+            $musicDash = (int) round(((int) $musicSync / 100) * 452);
+            $sharedDash = (int) round(((int) $sharedTaste / 100) * 452);
+            $genreDash = (int) round(((int) $genreMatch / 100) * 452);
+            $vibeDash = (int) round(((int) $vibeMatch / 100) * 452);
+        ?>
 
         <!-- Nagłówek profilu -->
         <section class="profile-header">
             <div class="profile-header-info">
                 <span class="profile-label">Active Profile</span>
-                <h1 class="profile-name">Anna, 24</h1>
+                <h1 class="profile-name"><?= $candidateName ?><?= $candidateAge ?></h1>
                 <div class="profile-chips">
                     <div class="profile-chip">
                         <span class="material-symbols-outlined">location_on</span>
-                        Warsaw
+                        <?= $candidateCity ?>
                     </div>
                 </div>
                 <div class="dna-tags" style="margin-top: 0.625rem;">
-                    <span class="dna-tag">Indie</span>
-                    <span class="dna-tag">Alternative</span>
-                    <span class="dna-tag">Rock</span>
+                    <?php if (!empty($genres)): ?>
+                        <?php foreach ($genres as $genre): ?>
+                            <span class="dna-tag"><?= htmlspecialchars($genre, ENT_QUOTES, 'UTF-8') ?></span>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <span class="dna-tag">No music data</span>
+                    <?php endif; ?>
                 </div>
             </div>
 
@@ -36,7 +67,7 @@
                         <div class="sync-circle">
                             <svg viewBox="0 0 160 160">
                                 <circle cx="80" cy="80" r="72" fill="none" stroke="rgba(141,246,136,0.1)" stroke-width="6"/>
-                                <circle cx="80" cy="80" r="72" fill="none" stroke="url(#g1)" stroke-width="6" stroke-linecap="round" stroke-dasharray="339 452"/>
+                                <circle cx="80" cy="80" r="72" fill="none" stroke="url(#g1)" stroke-width="6" stroke-linecap="round" stroke-dasharray="<?= $musicDash ?> 452"/>
                                 <defs>
                                     <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="0%">
                                         <stop offset="0%" stop-color="#F650BD"/>
@@ -45,7 +76,7 @@
                                 </defs>
                             </svg>
                             <div class="sync-circle-inner">
-                                <span class="sync-pct">75%</span>
+                                <span class="sync-pct"><?= (int) $musicSync ?>%</span>
                                 <span class="sync-label">In Sync</span>
                             </div>
                         </div>
@@ -56,7 +87,7 @@
                             <div class="mini-circle">
                                 <svg viewBox="0 0 160 160">
                                     <circle cx="80" cy="80" r="72" fill="none" stroke="rgba(141,246,136,0.1)" stroke-width="8"/>
-                                    <circle cx="80" cy="80" r="72" fill="none" stroke="url(#g2)" stroke-width="8" stroke-linecap="round" stroke-dasharray="339 452"/>
+                                    <circle cx="80" cy="80" r="72" fill="none" stroke="url(#g2)" stroke-width="8" stroke-linecap="round" stroke-dasharray="<?= $sharedDash ?> 452"/>
                                     <defs>
                                         <linearGradient id="g2" x1="0%" y1="0%" x2="100%" y2="0%">
                                             <stop offset="0%" stop-color="#F650BD"/>
@@ -65,7 +96,7 @@
                                     </defs>
                                 </svg>
                                 <div class="mini-circle-inner">
-                                    <span class="mini-pct">75%</span>
+                                    <span class="mini-pct"><?= (int) $sharedTaste ?>%</span>
                                 </div>
                             </div>
                             <span class="mini-label">Shared Taste</span>
@@ -75,7 +106,7 @@
                             <div class="mini-circle">
                                 <svg viewBox="0 0 160 160">
                                     <circle cx="80" cy="80" r="72" fill="none" stroke="rgba(141,246,136,0.1)" stroke-width="8"/>
-                                    <circle cx="80" cy="80" r="72" fill="none" stroke="url(#g3)" stroke-width="8" stroke-linecap="round" stroke-dasharray="271 452"/>
+                                    <circle cx="80" cy="80" r="72" fill="none" stroke="url(#g3)" stroke-width="8" stroke-linecap="round" stroke-dasharray="<?= $genreDash ?> 452"/>
                                     <defs>
                                         <linearGradient id="g3" x1="0%" y1="0%" x2="100%" y2="0%">
                                             <stop offset="0%" stop-color="#F650BD"/>
@@ -84,7 +115,7 @@
                                     </defs>
                                 </svg>
                                 <div class="mini-circle-inner">
-                                    <span class="mini-pct">60%</span>
+                                    <span class="mini-pct"><?= (int) $genreMatch ?>%</span>
                                 </div>
                             </div>
                             <span class="mini-label">Genre Match</span>
@@ -94,7 +125,7 @@
                             <div class="mini-circle">
                                 <svg viewBox="0 0 160 160">
                                     <circle cx="80" cy="80" r="72" fill="none" stroke="rgba(141,246,136,0.1)" stroke-width="8"/>
-                                    <circle cx="80" cy="80" r="72" fill="none" stroke="url(#g4)" stroke-width="8" stroke-linecap="round" stroke-dasharray="370 452"/>
+                                    <circle cx="80" cy="80" r="72" fill="none" stroke="url(#g4)" stroke-width="8" stroke-linecap="round" stroke-dasharray="<?= $vibeDash ?> 452"/>
                                     <defs>
                                         <linearGradient id="g4" x1="0%" y1="0%" x2="100%" y2="0%">
                                             <stop offset="0%" stop-color="#F650BD"/>
@@ -103,7 +134,7 @@
                                     </defs>
                                 </svg>
                                 <div class="mini-circle-inner">
-                                    <span class="mini-pct">82%</span>
+                                    <span class="mini-pct"><?= (int) $vibeMatch ?>%</span>
                                 </div>
                             </div>
                             <span class="mini-label">Vibe Match</span>
@@ -116,14 +147,22 @@
         <!-- Przyciski akcji -->
 
         <div class="discover-actions">
-            <button class="action-btn action-pass">
-                <span class="material-symbols-outlined">close</span>
-                Pass
-            </button>
-            <button class="action-btn action-like">
-                <span class="material-symbols-outlined">favorite</span>
-                Connect
-            </button>
+            <form method="POST" action="/discover/swipe" class="action-form action-form-pass">
+                <input type="hidden" name="target_id" value="<?= (int) $candidate['id'] ?>">
+                <input type="hidden" name="direction" value="PASS">
+                <button class="action-btn action-pass" type="submit">
+                    <span class="material-symbols-outlined">close</span>
+                    Pass
+                </button>
+            </form>
+            <form method="POST" action="/discover/swipe" class="action-form action-form-like">
+                <input type="hidden" name="target_id" value="<?= (int) $candidate['id'] ?>">
+                <input type="hidden" name="direction" value="LIKE">
+                <button class="action-btn action-like" type="submit">
+                    <span class="material-symbols-outlined">favorite</span>
+                    Connect
+                </button>
+            </form>
         </div>
 
         <!-- Sekcja muzyczna -->
@@ -138,7 +177,7 @@
                     <div class="influence-overlay"></div>
                     <div class="influence-text">
                         <span class="influence-label">Lifetime Influence</span>
-                        <h2 class="influence-name">THE STROKES</h2>
+                        <h2 class="influence-name"><?= htmlspecialchars(strtoupper($mainArtist), ENT_QUOTES, 'UTF-8') ?></h2>
                         <div class="influence-sub">
                             <span class="material-symbols-outlined">star_rate</span>
                             Signature Catalog
@@ -152,17 +191,17 @@
                         <h3>Auditory DNA <span>6M Range</span></h3>
                     </div>
                     <div class="artists-grid">
-                        <?php
-            $artists = ['Arctic Monkeys', 'Tame Impala', 'Radiohead', 'Vampire Weekend', 'The Killers'];
-            foreach ($artists as $artist):
-            ?>
+                        <?php foreach ($artists as $artist): ?>
                         <div class="artist-card">
                             <div class="artist-photo">
                                 <span class="material-symbols-outlined">person</span>
                             </div>
-                            <span class="artist-name"><?= $artist ?></span>
+                            <span class="artist-name"><?= htmlspecialchars($artist['artist_name'] ?? '', ENT_QUOTES, 'UTF-8') ?></span>
                         </div>
                         <?php endforeach; ?>
+                        <?php if (empty($artists)): ?>
+                            <span class="artist-name">No artists synced yet</span>
+                        <?php endif; ?>
                     </div>
                 </section>
 
@@ -173,72 +212,60 @@
                         <div class="music-section-header">
                             <h3>All Time <span>Long Term</span></h3>
                         </div>
-                        <?php
-            $longTerm = [
-                ['name' => 'Last Nite', 'artist' => 'The Strokes'],
-                        ['name' => 'Reptilia', 'artist' => 'The Strokes'],
-                        ['name' => 'Do I Wanna Know?', 'artist' => 'Arctic Monkeys'],
-                        ];
-                        foreach ($longTerm as $track):
-                        ?>
+                        <?php foreach ($tracks as $track): ?>
                         <div class="track-row">
                             <div class="track-thumb">
                                 <span class="material-symbols-outlined">album</span>
                             </div>
                             <div class="track-info">
-                                <p class="track-name"><?= $track['name'] ?></p>
-                                <p class="track-artist"><?= $track['artist'] ?></p>
+                                <p class="track-name"><?= htmlspecialchars($track['track_name'] ?? '', ENT_QUOTES, 'UTF-8') ?></p>
+                                <p class="track-artist"><?= htmlspecialchars($track['artist_name'] ?? '', ENT_QUOTES, 'UTF-8') ?></p>
                             </div>
                         </div>
                         <?php endforeach; ?>
+                        <?php if (empty($tracks)): ?>
+                            <p class="track-artist">No tracks synced yet</p>
+                        <?php endif; ?>
                     </section>
 
                     <section class="music-section">
                         <div class="music-section-header">
                             <h3>Recent Faves <span>Mid Term</span></h3>
                         </div>
-                        <?php
-            $midTerm = [
-                ['name' => 'Electric Feel', 'artist' => 'MGMT'],
-                        ['name' => 'Let It Happen', 'artist' => 'Tame Impala'],
-                        ['name' => 'R U Mine?', 'artist' => 'Arctic Monkeys'],
-                        ];
-                        foreach ($midTerm as $track):
-                        ?>
+                        <?php foreach ($tracks as $track): ?>
                         <div class="track-row">
                             <div class="track-thumb">
                                 <span class="material-symbols-outlined">album</span>
                             </div>
                             <div class="track-info">
-                                <p class="track-name"><?= $track['name'] ?></p>
-                                <p class="track-artist"><?= $track['artist'] ?></p>
+                                <p class="track-name"><?= htmlspecialchars($track['track_name'] ?? '', ENT_QUOTES, 'UTF-8') ?></p>
+                                <p class="track-artist"><?= htmlspecialchars($track['artist_name'] ?? '', ENT_QUOTES, 'UTF-8') ?></p>
                             </div>
                         </div>
                         <?php endforeach; ?>
+                        <?php if (empty($tracks)): ?>
+                            <p class="track-artist">No tracks synced yet</p>
+                        <?php endif; ?>
                     </section>
 
                     <section class="music-section">
                         <div class="music-section-header">
                             <h3>Just Played <span>Recent</span></h3>
                         </div>
-                        <?php
-            $recent = [
-                ['name' => 'Fluorescent Adolescent', 'artist' => 'Arctic Monkeys'],
-                        ['name' => 'The Less I Know', 'artist' => 'Tame Impala'],
-                        ['name' => 'New York City Cops', 'artist' => 'The Strokes'],
-                        ];
-                        foreach ($recent as $track):
-                        ?>
+                        <?php foreach ($tracks as $track): ?>
                         <div class="track-row">
                             <div class="track-thumb">
                                 <span class="material-symbols-outlined">album</span>
                             </div>
                             <div class="track-info">
-                                <p class="track-name"><?= $track['name'] ?></p>
-                                <p class="track-artist"><?= $track['artist'] ?></p>
+                                <p class="track-name"><?= htmlspecialchars($track['track_name'] ?? '', ENT_QUOTES, 'UTF-8') ?></p>
+                                <p class="track-artist"><?= htmlspecialchars($track['artist_name'] ?? '', ENT_QUOTES, 'UTF-8') ?></p>
                             </div>
                         </div>
                         <?php endforeach; ?>
+                        <?php if (empty($tracks)): ?>
+                            <p class="track-artist">No tracks synced yet</p>
+                        <?php endif; ?>
                     </section>
 
                 </div>
@@ -246,6 +273,7 @@
             </div>
 
         </div>
+        <?php endif; ?>
     </div>
     </main>
 </div>

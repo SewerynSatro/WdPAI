@@ -30,6 +30,42 @@ class UsersRepository extends Repository {
         return $users;
     }
 
+    public function getDiscoverCandidateForUser(int $userId)
+    {
+        $query = $this->database->connect()->prepare(
+            "
+            SELECT
+                u.id,
+                u.email,
+                COALESCE(u.display_name, CONCAT(u.firstname, ' ', u.lastname)) AS display_name,
+                up.bio,
+                up.city,
+                up.birth_date,
+                up.gender,
+                up.looking_for,
+                up.instagram_handle,
+                up.facebook_handle,
+                up.spotify_handle
+            FROM users u
+            LEFT JOIN user_profiles up ON up.user_id = u.id
+            WHERE u.id != :user_id
+              AND u.is_active = TRUE
+              AND COALESCE(up.onboarding_completed, FALSE) = TRUE
+              AND u.id NOT IN (
+                  SELECT target_id FROM swipes WHERE swiper_id = :swiper_id
+              )
+            ORDER BY RANDOM()
+            LIMIT 1
+            "
+        );
+        $query->execute([
+            'user_id' => $userId,
+            'swiper_id' => $userId,
+        ]);
+
+        return $query->fetch(PDO::FETCH_ASSOC) ?: null;
+    }
+
   public function getUserByEmail(string $email) {
         $query = $this->database->connect()->prepare(
             "
