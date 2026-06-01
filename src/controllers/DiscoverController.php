@@ -21,13 +21,7 @@ class DiscoverController extends AppController {
     }
 
     public function index() {
-        session_start();
-
-        if (!isset($_SESSION['user_id'])) {
-            $url = "http://$_SERVER[HTTP_HOST]";
-            header("Location: {$url}/login");
-            exit();
-        }
+        $this->requireCompletedOnboarding();
 
         $userId = (int) $_SESSION['user_id'];
         $candidate = $this->usersRepository->getDiscoverCandidateForUser($userId);
@@ -58,13 +52,7 @@ class DiscoverController extends AppController {
     }
 
     public function swipe() {
-        session_start();
-
-        if (!isset($_SESSION['user_id'])) {
-            $url = "http://$_SERVER[HTTP_HOST]";
-            header("Location: {$url}/login");
-            exit();
-        }
+        $this->requireCompletedOnboarding();
 
         $targetId = (int) ($_POST['target_id'] ?? 0);
         $direction = strtoupper(trim($_POST['direction'] ?? ''));
@@ -78,9 +66,7 @@ class DiscoverController extends AppController {
             }
         }
 
-        $url = "http://$_SERVER[HTTP_HOST]";
-        header("Location: {$url}/discover");
-        exit();
+        $this->redirect('/discover');
     }
 
     private function ageFromBirthDate(?string $birthDate): ?int {

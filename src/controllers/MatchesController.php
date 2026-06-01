@@ -15,13 +15,7 @@ class MatchesController extends AppController {
     }
 
     public function index() {
-        session_start();
-
-        if (!isset($_SESSION['user_id'])) {
-            $url = "http://$_SERVER[HTTP_HOST]";
-            header("Location: {$url}/login");
-            exit();
-        }
+        $this->requireCompletedOnboarding();
 
         $userId = (int) $_SESSION['user_id'];
         $matches = $this->matchesRepository->getMatchesByUserId($userId);
@@ -39,13 +33,7 @@ class MatchesController extends AppController {
     }
 
     public function show(int $id) {
-        session_start();
-
-        if (!isset($_SESSION['user_id'])) {
-            $url = "http://$_SERVER[HTTP_HOST]";
-            header("Location: {$url}/login");
-            exit();
-        }
+        $this->requireCompletedOnboarding();
 
         $userId = (int) $_SESSION['user_id'];
         $partner = $this->matchesRepository->getMatchPartner($userId, $id);

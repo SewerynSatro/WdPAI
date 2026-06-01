@@ -5,13 +5,7 @@ require_once 'AppController.php';
 class ProfileController extends AppController {
 
     public function index() {
-        session_start();
-
-        if (!isset($_SESSION['user_id'])) {
-            $url = "http://$_SERVER[HTTP_HOST]";
-            header("Location: {$url}/login");
-            exit();
-        }
+        $this->requireCompletedOnboarding();
 
         return $this->render('profile', [
             'userEmail'  => $_SESSION['user_email'],

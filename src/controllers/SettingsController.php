@@ -21,13 +21,7 @@ class SettingsController extends AppController
 
     public function index()
     {
-        session_start();
-
-        if (!isset($_SESSION['user_id'])) {
-            $url = "http://$_SERVER[HTTP_HOST]";
-            header("Location: {$url}/login");
-            exit();
-        }
+        $this->requireCompletedOnboarding();
 
         $userId = (int) $_SESSION['user_id'];
 
@@ -42,13 +36,7 @@ class SettingsController extends AppController
 
     public function updateAccount()
     {
-        session_start();
-
-        if (!isset($_SESSION['user_id'])) {
-            $url = "http://$_SERVER[HTTP_HOST]";
-            header("Location: {$url}/login");
-            exit();
-        }
+        $this->requireCompletedOnboarding();
 
         $userId = (int) $_SESSION['user_id'];
         $email = trim($_POST['email'] ?? '');
@@ -100,43 +88,41 @@ class SettingsController extends AppController
 
     public function connectProvider(string $provider)
     {
-        session_start();
+        $this->requireLogin();
 
-        if (!isset($_SESSION['user_id'])) {
-            $url = "http://$_SERVER[HTTP_HOST]";
-            header("Location: {$url}/login");
-            exit();
+        if ($provider !== 'spotify') {
+            $this->redirect('/onboarding');
         }
 
-        $url = "http://$_SERVER[HTTP_HOST]";
-        header("Location: {$url}/settings");
-        exit();
+        $this->providerAccountsRepository->upsert(
+            (int) $_SESSION['user_id'],
+            'spotify',
+            'pending-oauth-token',
+            null,
+            3600
+        );
+
+        if (!$this->hasCompletedOnboarding((int) $_SESSION['user_id'])) {
+            $this->redirect('/onboarding');
+        }
+
+        $this->redirect('/settings');
     }
 
     public function providerCallback(string $provider)
     {
-        session_start();
+        $this->requireLogin();
 
-        if (!isset($_SESSION['user_id'])) {
-            $url = "http://$_SERVER[HTTP_HOST]";
-            header("Location: {$url}/login");
-            exit();
+        if (!$this->hasCompletedOnboarding((int) $_SESSION['user_id'])) {
+            $this->redirect('/onboarding');
         }
 
-        $url = "http://$_SERVER[HTTP_HOST]";
-        header("Location: {$url}/settings");
-        exit();
+        $this->redirect('/settings');
     }
 
     public function syncMusic()
     {
-        session_start();
-
-        if (!isset($_SESSION['user_id'])) {
-            $url = "http://$_SERVER[HTTP_HOST]";
-            header("Location: {$url}/login");
-            exit();
-        }
+        $this->requireCompletedOnboarding();
 
         $url = "http://$_SERVER[HTTP_HOST]";
         header("Location: {$url}/settings");

@@ -6,20 +6,12 @@ require_once __DIR__.'/../repositories/UsersRepository.php';
 class DashboardController extends AppController {
 
     public function index() {
-        session_start();
-
-        if (!isset($_SESSION['user_id'])) {
-            $url = "http://$_SERVER[HTTP_HOST]";
-            header("Location: {$url}/login");
-            exit();
-        }
+        $this->requireCompletedOnboarding();
 
         $title = "INDEX";
         $usersRepository = new UsersRepository();
         $users = $usersRepository->getUsers();
 
-        $url = "http://$_SERVER[HTTP_HOST]";
-        header("Location: {$url}/discover");
-        exit();
+        $this->redirect('/discover');
     }
 }

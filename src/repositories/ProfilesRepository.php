@@ -55,7 +55,9 @@ class ProfilesRepository extends Repository {
             }
 
             $setParts[] = "{$field} = :{$field}";
-            $params[$field] = $value;
+            $params[$field] = $field === 'onboarding_completed'
+                ? ($value ? 'true' : 'false')
+                : $value;
         }
 
         if (empty($setParts)) {

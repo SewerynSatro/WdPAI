@@ -21,6 +21,17 @@
     margin-bottom: 2rem;
 }
 
+.onboarding-alert {
+    background: rgba(246, 80, 189, 0.12);
+    border: 1px solid rgba(246, 80, 189, 0.35);
+    color: #fff;
+    border-radius: var(--radius);
+    padding: 0.875rem 1rem;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    margin-bottom: 1rem;
+}
+
 /* --- Spotify CTA --- */
 .spotify-cta {
     display: flex;

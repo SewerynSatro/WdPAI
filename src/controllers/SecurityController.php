@@ -2,6 +2,7 @@
 
 require_once 'AppController.php';
 require_once __DIR__ . '/../repositories/UsersRepository.php';
+require_once __DIR__ . '/../repositories/ProfilesRepository.php';
 
 class SecurityController extends AppController {
 
@@ -25,13 +26,15 @@ class SecurityController extends AppController {
                 ]);
             }
 
-            session_start();
+            $this->startSession();
             $_SESSION['user_id']    = $user['id'];
             $_SESSION['user_email'] = $user['email'];
 
-            $url = "http://$_SERVER[HTTP_HOST]";
-            header("Location: {$url}/dashboard");
-            exit();
+            if ($this->hasCompletedOnboarding((int) $user['id'])) {
+                $this->redirect('/discover');
+            }
+
+            $this->redirect('/onboarding');
         }
 
         return $this->render('login');
@@ -79,19 +82,20 @@ class SecurityController extends AppController {
                 $lastName
             );
 
-            header('Location: /login');
-            exit();
+            $user = $this->usersRepository->getUserByEmail($email);
+            $profilesRepository = new ProfilesRepository();
+            $profilesRepository->createForUser((int) $user['id']);
+
+            $this->redirect('/login');
         }
 
         return $this->render('register');
     }
 
     public function logout() {
-        session_start();
+        $this->startSession();
         session_destroy();
 
-        $url = "http://$_SERVER[HTTP_HOST]";
-        header("Location: {$url}/login");
-        exit();
+        $this->redirect('/login');
     }
 }
