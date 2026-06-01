@@ -5,17 +5,23 @@ require_once 'AppController.php';
 require_once __DIR__ . '/../repositories/ProfilesRepository.php';
 require_once __DIR__ . '/../repositories/ProviderAccountsRepository.php';
 require_once __DIR__ . '/../repositories/UsersRepository.php';
+require_once __DIR__ . '/../providers/SpotifyProvider.php';
+require_once __DIR__ . '/../services/MusicSyncService.php';
 
 class SettingsController extends AppController
 {
     private ProfilesRepository $profilesRepository;
     private ProviderAccountsRepository $providerAccountsRepository;
+    private SpotifyProvider $spotifyProvider;
+    private MusicSyncService $musicSyncService;
     private UsersRepository $usersRepository;
 
     public function __construct()
     {
         $this->profilesRepository = new ProfilesRepository();
         $this->providerAccountsRepository = new ProviderAccountsRepository();
+        $this->spotifyProvider = new SpotifyProvider();
+        $this->musicSyncService = new MusicSyncService();
         $this->usersRepository = new UsersRepository();
     }
 
@@ -94,39 +100,77 @@ class SettingsController extends AppController
             $this->redirect('/onboarding');
         }
 
-        $this->providerAccountsRepository->upsert(
-            (int) $_SESSION['user_id'],
-            'spotify',
-            'pending-oauth-token',
-            null,
-            3600
-        );
+        $state = bin2hex(random_bytes(16));
+        $_SESSION['oauth_state'] = $state;
+        $_SESSION['oauth_provider'] = 'spotify';
 
-        if (!$this->hasCompletedOnboarding((int) $_SESSION['user_id'])) {
-            $this->redirect('/onboarding');
-        }
-
-        $this->redirect('/settings');
+        header('Location: ' . $this->spotifyProvider->getAuthorizationUrl($state));
+        exit();
     }
 
     public function providerCallback(string $provider)
     {
         $this->requireLogin();
 
+        if ($provider !== 'spotify') {
+            $this->redirect('/onboarding');
+        }
+
+        $error = $_GET['error'] ?? null;
+        if ($error) {
+            $this->redirect('/onboarding');
+        }
+
+        $code = trim($_GET['code'] ?? '');
+        $state = trim($_GET['state'] ?? '');
+        $expectedState = $_SESSION['oauth_state'] ?? '';
+        $expectedProvider = $_SESSION['oauth_provider'] ?? '';
+
+        unset($_SESSION['oauth_state'], $_SESSION['oauth_provider']);
+
+        if ($code === '' || $state === '' || !hash_equals($expectedState, $state) || $expectedProvider !== 'spotify') {
+            $this->redirect('/onboarding');
+        }
+
+        $tokens = $this->spotifyProvider->exchangeAuthorizationCode($code);
+
+        if (empty($tokens['access_token'])) {
+            $this->redirect('/onboarding');
+        }
+
+        $userId = (int) $_SESSION['user_id'];
+        $this->providerAccountsRepository->upsert(
+            $userId,
+            'spotify',
+            $tokens['access_token'],
+            $tokens['refresh_token'] ?? null,
+            (int) ($tokens['expires_in'] ?? 3600)
+        );
+
+        try {
+            $this->musicSyncService->syncAllForUser($userId, 'spotify');
+        } catch (Throwable $e) {
+            // Provider connection is still valid even if an immediate sync fails.
+        }
+
         if (!$this->hasCompletedOnboarding((int) $_SESSION['user_id'])) {
             $this->redirect('/onboarding');
         }
 
-        $this->redirect('/settings');
+        $this->redirect('/profile');
     }
 
     public function syncMusic()
     {
         $this->requireCompletedOnboarding();
 
-        $url = "http://$_SERVER[HTTP_HOST]";
-        header("Location: {$url}/settings");
-        exit();
+        try {
+            $this->musicSyncService->syncAllForUser((int) $_SESSION['user_id'], 'spotify');
+        } catch (Throwable $e) {
+            $this->redirect('/profile');
+        }
+
+        $this->redirect('/profile');
     }
 
     private function nullablePostValue(string $key): ?string
