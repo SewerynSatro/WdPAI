@@ -102,8 +102,12 @@ class MusicRepository extends Repository {
         $genres = $this->getGenresForUser($userId);
 
         return [
-            'top_artists' => array_slice($this->getArtistsForUser($userId), 0, 5),
-            'top_tracks' => array_slice($this->getTopTracksForUser($userId), 0, 3),
+            'top_artists' => array_slice($this->getArtistsForUser($userId, 'medium_term'), 0, 5),
+            'top_tracks' => array_slice($this->getTopTracksForUser($userId, 'medium_term'), 0, 3),
+            'short_term_tracks' => array_slice($this->getTopTracksForUser($userId, 'short_term'), 0, 3),
+            'medium_term_tracks' => array_slice($this->getTopTracksForUser($userId, 'medium_term'), 0, 3),
+            'long_term_tracks' => array_slice($this->getTopTracksForUser($userId, 'long_term'), 0, 3),
+            'recent_plays' => array_slice($this->getRecentPlaysForUser($userId), 0, 3),
             'top_genres' => array_slice(array_keys($genres), 0, 3),
         ];
     }

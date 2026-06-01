@@ -51,6 +51,12 @@ class MusicSyncService {
             }
 
             $genres = $this->spotifyProvider->fetchTopGenres($accessToken);
+            if (empty($genres)) {
+                $genres = $this->inferGenresFromLocalData($connection, $userId);
+            }
+            if (empty($genres)) {
+                $genres = $this->inferGenresFromSyncedArtists($connection, $userId);
+            }
             $genresSynced = $this->replaceGenres($connection, $userId, $providerKey, $genres);
 
             $recent = $this->spotifyProvider->fetchRecentlyPlayed($accessToken);
@@ -138,21 +144,137 @@ class MusicSyncService {
             'DELETE FROM user_genres WHERE user_id = :user_id AND provider_key = :provider_key'
         )->execute(['user_id' => $userId, 'provider_key' => $providerKey]);
 
+        $maxWeight = !empty($genres) ? max(array_map('intval', array_values($genres))) : 0;
+
         $insert = $connection->prepare(
             'INSERT INTO user_genres (user_id, provider_key, genre, weight)
              VALUES (:user_id, :provider_key, :genre, :weight)'
         );
 
         foreach ($genres as $genre => $weight) {
+            $normalizedWeight = $maxWeight > 0
+                ? max(1, (int) round(((int) $weight / $maxWeight) * 10))
+                : 1;
+
             $insert->execute([
                 'user_id' => $userId,
                 'provider_key' => $providerKey,
                 'genre' => $genre,
-                'weight' => (int) $weight,
+                'weight' => $normalizedWeight,
             ]);
         }
 
         return count($genres);
+    }
+
+    private function inferGenresFromLocalData(PDO $connection, int $userId): array
+    {
+        $query = $connection->prepare(
+            "
+            SELECT ug.genre, SUM(ug.weight) AS score
+            FROM user_artists current_artists
+            JOIN user_artists known_artists
+              ON LOWER(known_artists.artist_name) = LOWER(current_artists.artist_name)
+             AND known_artists.user_id != current_artists.user_id
+            JOIN user_genres ug ON ug.user_id = known_artists.user_id
+            WHERE current_artists.user_id = :user_id
+            GROUP BY ug.genre
+            ORDER BY score DESC
+            LIMIT 20
+            "
+        );
+        $query->execute(['user_id' => $userId]);
+
+        $genres = [];
+        foreach ($query->fetchAll(PDO::FETCH_ASSOC) as $row) {
+            $genres[$row['genre']] = max(1, (int) round((float) $row['score']));
+        }
+
+        return $genres;
+    }
+
+    private function inferGenresFromSyncedArtists(PDO $connection, int $userId): array
+    {
+        $query = $connection->prepare(
+            "
+            SELECT artist_name, time_range, rank
+            FROM user_artists
+            WHERE user_id = :user_id
+            ORDER BY
+                CASE time_range
+                    WHEN 'short_term' THEN 1
+                    WHEN 'medium_term' THEN 2
+                    ELSE 3
+                END,
+                rank
+            "
+        );
+        $query->execute(['user_id' => $userId]);
+
+        $scores = [];
+        foreach ($query->fetchAll(PDO::FETCH_ASSOC) as $artist) {
+            foreach ($this->genresForArtistName($artist['artist_name'] ?? '') as $genre) {
+                $rank = max(1, (int) ($artist['rank'] ?? 1));
+                $weight = max(1, 12 - min($rank, 10));
+                $scores[$genre] = ($scores[$genre] ?? 0) + $weight;
+            }
+        }
+
+        arsort($scores);
+        return array_slice($scores, 0, 12, true);
+    }
+
+    private function genresForArtistName(string $artistName): array
+    {
+        $name = strtolower($artistName);
+        $knownArtists = [
+            'arctic monkeys' => ['indie rock', 'alternative rock'],
+            'tame impala' => ['psychedelic pop', 'indie rock'],
+            'radiohead' => ['alternative rock', 'art rock'],
+            'the strokes' => ['indie rock', 'garage rock'],
+            'the killers' => ['alternative rock', 'indie rock'],
+            'vampire weekend' => ['indie pop', 'indie rock'],
+            'mgmt' => ['indie pop', 'psychedelic pop'],
+            'frank ocean' => ['r&b', 'neo soul'],
+            'kendrick lamar' => ['hip hop', 'rap'],
+            'drake' => ['hip hop', 'rap'],
+            'kanye west' => ['hip hop', 'rap'],
+            'taylor swift' => ['pop', 'singer-songwriter'],
+            'billie eilish' => ['pop', 'alt pop'],
+            'dua lipa' => ['pop', 'dance pop'],
+            'the weeknd' => ['pop', 'r&b'],
+            'daft punk' => ['electronic', 'house'],
+            'calvin harris' => ['edm', 'dance pop'],
+            'avicii' => ['edm', 'progressive house'],
+            'metallica' => ['metal', 'hard rock'],
+            'nirvana' => ['grunge', 'alternative rock'],
+            'queen' => ['classic rock', 'rock'],
+            'pink floyd' => ['progressive rock', 'classic rock'],
+            'the beatles' => ['classic rock', 'rock'],
+            'miles davis' => ['jazz'],
+        ];
+
+        foreach ($knownArtists as $artist => $genres) {
+            if (str_contains($name, $artist)) {
+                return $genres;
+            }
+        }
+
+        $patterns = [
+            'dj ' => ['electronic'],
+            'orchestra' => ['classical'],
+            'quartet' => ['jazz'],
+            'band' => ['rock'],
+            'choir' => ['classical'],
+        ];
+
+        foreach ($patterns as $pattern => $genres) {
+            if (str_contains($name, $pattern)) {
+                return $genres;
+            }
+        }
+
+        return ['pop'];
     }
 
     private function replaceRecentPlays(PDO $connection, int $userId, string $providerKey, array $tracks): int

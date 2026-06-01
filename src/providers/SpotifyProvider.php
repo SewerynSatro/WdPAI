@@ -104,8 +104,69 @@ class SpotifyProvider {
             }
         }
 
+        if (empty($genres)) {
+            $artistIds = array_values(array_filter(array_column($artists, 'id')));
+            foreach ($this->fetchArtistsByIds($accessToken, $artistIds) as $artist) {
+                foreach ($artist['genres'] as $genre) {
+                    $genres[$genre] = ($genres[$genre] ?? 0) + 1;
+                }
+            }
+        }
+
+        if (empty($genres)) {
+            foreach ($this->fetchFollowedArtists($accessToken) as $artist) {
+                foreach ($artist['genres'] as $genre) {
+                    $genres[$genre] = ($genres[$genre] ?? 0) + 1;
+                }
+            }
+        }
+
         arsort($genres);
         return array_slice($genres, 0, 20, true);
+    }
+
+    private function fetchArtistsByIds(string $accessToken, array $artistIds): array
+    {
+        $artists = [];
+
+        foreach (array_chunk(array_unique($artistIds), 50) as $chunk) {
+            if (empty($chunk)) {
+                continue;
+            }
+
+            $data = $this->httpGet(self::API_BASE . '/artists?' . http_build_query([
+                'ids' => implode(',', $chunk),
+            ]), $accessToken);
+
+            foreach ($data['artists'] ?? [] as $item) {
+                $artists[] = [
+                    'id' => $item['id'] ?? '',
+                    'name' => $item['name'] ?? '',
+                    'genres' => $item['genres'] ?? [],
+                ];
+            }
+        }
+
+        return $artists;
+    }
+
+    private function fetchFollowedArtists(string $accessToken, int $limit = 50): array
+    {
+        $data = $this->httpGet(self::API_BASE . '/me/following?' . http_build_query([
+            'type' => 'artist',
+            'limit' => min($limit, 50),
+        ]), $accessToken);
+
+        $artists = [];
+        foreach ($data['artists']['items'] ?? [] as $item) {
+            $artists[] = [
+                'id' => $item['id'] ?? '',
+                'name' => $item['name'] ?? '',
+                'genres' => $item['genres'] ?? [],
+            ];
+        }
+
+        return $artists;
     }
 
     public function fetchRecentlyPlayed(string $accessToken, int $limit = 50): array

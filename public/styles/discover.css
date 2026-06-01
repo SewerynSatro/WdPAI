@@ -343,6 +343,14 @@
     color: rgba(255, 255, 255, 0.20);
 }
 
+.artist-photo img,
+.track-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
 .artist-name {
     font-size: 0.625rem;
     font-weight: 700;
@@ -527,6 +535,7 @@
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    overflow: hidden;
 }
 
 .track-thumb .material-symbols-outlined {
