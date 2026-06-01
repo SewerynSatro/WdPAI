@@ -351,6 +351,16 @@
     font-size: 1rem;
 }
 
+.profile-empty-note {
+    grid-column: 1 / -1;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text-muted);
+    padding: 1rem;
+    font-size: 0.875rem;
+}
+
 /* --- Responsive --- */
 @media (max-width: 768px) {
     .profile-top {
