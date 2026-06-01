@@ -80,22 +80,135 @@
 .matches-list {
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
+    gap: 0.85rem;
 }
 
 .match-card {
-    background: var(--bg-card);
+    position: relative;
     border: 1px solid var(--border);
     border-radius: var(--radius);
-    padding: 1.25rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-    transition: border-color 0.2s;
+    min-height: 10.5rem;
+    overflow: hidden;
+    isolation: isolate;
+    transition: border-color 0.25s, box-shadow 0.25s, transform 0.25s;
 }
 
-.match-card:hover {
-    border-color: rgba(141, 246, 136, 0.20);
+.match-card:hover,
+.match-card:focus-within {
+    border-color: rgba(141, 246, 136, 0.25);
+    box-shadow: 0 12px 34px rgba(0, 0, 0, 0.40), 0 0 0 1px rgba(246, 80, 189, 0.12);
+    transform: translateY(-2px);
+}
+
+/* --- Cover background (przesuwany pasek okladek) --- */
+.cover-bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    background: var(--bg-card);
+}
+
+.cover-track {
+    display: flex;
+    height: 100%;
+    width: max-content;
+    transform: translateX(0);
+    animation: coverScroll 36s linear infinite;
+    animation-play-state: paused;            /* rusza dopiero na hover/focus */
+    filter: grayscale(0.45) brightness(0.7); /* w spoczynku przygaszone */
+    transition: filter 0.4s ease;
+    will-change: transform;
+}
+
+.match-card:hover .cover-track,
+.match-card:focus-within .cover-track {
+    animation-play-state: running;
+    filter: grayscale(0) brightness(0.95);   /* ozywaja po najechaniu */
+}
+
+@keyframes coverScroll {
+    from { transform: translateX(0); }    /* ruch od LEWEJ do PRAWEJ */
+    to   { transform: translateX(-50%); }
+}
+
+.cover {
+    position: relative;
+    flex: 0 0 auto;
+    height: 100%;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    border-right: 1px solid rgba(0, 0, 0, 0.25);
+}
+
+.cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* nazwa wykonawcy na dole okladki */
+.cover-name {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 0.9rem 0.4rem 0.35rem;
+    font-size: 0.625rem;
+    font-weight: 600;
+    line-height: 1.2;
+    color: #fff;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.85);
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.80) 0%, rgba(0, 0, 0, 0.45) 45%, transparent 100%);
+    pointer-events: none;
+}
+
+/* fallback dla braku zdjecia wykonawcy */
+.cover--empty {
+    background: linear-gradient(135deg, var(--accent-purple), var(--bg-card));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cover--empty .material-symbols-outlined {
+    font-size: 1.75rem;
+    color: rgba(255, 255, 255, 0.35);
+}
+
+/* --- Nakladka dla czytelnosci tekstu --- */
+.cover-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background:
+            linear-gradient(90deg, rgba(26, 38, 34, 0.92) 0%, rgba(26, 38, 34, 0.82) 38%, rgba(26, 38, 34, 0.45) 70%, rgba(26, 38, 34, 0.30) 100%),
+            radial-gradient(120% 140% at 0% 0%, rgba(86, 47, 84, 0.35), transparent 60%);
+    transition: background 0.35s ease;
+}
+
+.match-card:hover .cover-overlay,
+.match-card:focus-within .cover-overlay {
+    background:
+            linear-gradient(90deg, rgba(26, 38, 34, 0.88) 0%, rgba(26, 38, 34, 0.66) 40%, rgba(26, 38, 34, 0.25) 75%, rgba(26, 38, 34, 0.12) 100%),
+            radial-gradient(120% 140% at 0% 0%, rgba(86, 47, 84, 0.30), transparent 60%);
+}
+
+/* --- Tresc (na wierzchu) --- */
+.match-content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    min-width: 0;
+    padding: 1.25rem;
 }
 
 .match-top {
@@ -116,6 +229,7 @@
     font-weight: 700;
     color: #fff;
     flex-shrink: 0;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.40);
 }
 
 .match-info {
@@ -130,6 +244,7 @@
     text-decoration: none;
     transition: color 0.2s;
     display: block;
+    text-shadow: 0 1px 6px rgba(0, 0, 0, 0.6);
 }
 
 .match-name:hover {
@@ -143,6 +258,7 @@
     font-size: 0.75rem;
     color: var(--text-muted);
     margin-top: 0.125rem;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
 }
 
 .match-city .material-symbols-outlined {
@@ -153,60 +269,16 @@
     font-size: 0.6875rem;
     color: var(--text-faint);
     margin-top: 0.125rem;
-}
-
-.match-artists {
-    display: flex;
-    justify-content: flex-end;
-    flex-shrink: 0;
-    margin-left: auto;
-    align-self: stretch;
-}
-
-.artist-stack {
-    display: flex;
-    flex-direction: row-reverse;
-    align-items: stretch;
-}
-
-.artist-stack-item {
-    width: 3.5rem;
-    border-radius: 0.625rem;
-    border: 2px solid var(--bg-card);
-    margin-left: -1rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: margin 0.2s;
-    position: relative;
-    overflow: hidden;
-}
-
-.artist-stack-item:last-child {
-    margin-left: 0;
-}
-
-.artist-stack-item img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 0;
-}
-
-.artist-stack-item .material-symbols-outlined {
-    font-size: 1.125rem;
-    color: rgba(255, 255, 255, 0.50);
-}
-
-.artist-stack:hover .artist-stack-item {
-    margin-left: -0.5rem;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
 }
 
 .match-bio {
     font-size: 0.8125rem;
     color: var(--text-muted);
     line-height: 1.6;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
 }
+
 /* --- Socials --- */
 .match-socials {
     display: flex;
@@ -223,6 +295,7 @@
     font-size: 0.6875rem;
     font-weight: 700;
     text-decoration: none;
+    backdrop-filter: blur(3px);
     transition: opacity 0.2s;
 }
 
@@ -235,15 +308,15 @@
 }
 
 .social-spotify {
-    background: rgba(29, 185, 84, 0.10);
-    border: 1px solid rgba(29, 185, 84, 0.20);
-    color: #1DB954;
+    background: rgba(29, 185, 84, 0.20);
+    border: 1px solid rgba(29, 185, 84, 0.35);
+    color: #2be873;
 }
 
 .social-instagram {
-    background: rgba(246, 80, 189, 0.10);
-    border: 1px solid rgba(246, 80, 189, 0.20);
-    color: var(--secondary);
+    background: rgba(246, 80, 189, 0.20);
+    border: 1px solid rgba(246, 80, 189, 0.35);
+    color: #ff84d8;
 }
 
 /* --- Genres --- */
@@ -256,12 +329,14 @@
 .genre-tag {
     padding: 0.1875rem 0.625rem;
     border-radius: var(--radius-full);
-    background: rgba(246, 80, 189, 0.15);
-    color: var(--secondary);
+    background: rgba(246, 80, 189, 0.28);
+    border: 1px solid rgba(246, 80, 189, 0.40);
+    color: #fff;
     font-size: 0.6875rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.05em;
+    backdrop-filter: blur(3px);
 }
 
 /* --- Footer --- */
@@ -277,6 +352,7 @@
     font-weight: 700;
     color: var(--primary);
     text-decoration: none;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
     transition: color 0.2s;
 }
 
@@ -288,9 +364,53 @@
     font-size: 1rem;
 }
 
-/* --- Responsive --- */
+/* --- Reduced motion: nie animuj paska --- */
+@media (prefers-reduced-motion: reduce) {
+    .cover-track {
+        animation: none;
+    }
+}
+
+/* --- Responsive / mobile --- */
 @media (max-width: 600px) {
-    .match-artists {
-        display: none;
+    /* nakladka pionowa: okladki widac, tekst czytelny u dolu */
+    .cover-overlay {
+        background:
+                linear-gradient(180deg, rgba(26, 38, 34, 0.60) 0%, rgba(26, 38, 34, 0.85) 100%),
+                radial-gradient(120% 120% at 50% 0%, rgba(86, 47, 84, 0.30), transparent 60%);
+    }
+
+    .match-card:hover .cover-overlay,
+    .match-card:focus-within .cover-overlay {
+        background: linear-gradient(180deg, rgba(26, 38, 34, 0.45) 0%, rgba(26, 38, 34, 0.72) 100%);
+    }
+
+    /* tresc wysrodkowana */
+    .match-content {
+        align-items: center;
+        text-align: center;
+    }
+
+    .match-top {
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .match-info {
+        text-align: center;
+    }
+
+    .match-city {
+        justify-content: center;
+    }
+
+    .match-socials,
+    .match-genres {
+        justify-content: center;
+    }
+
+    .match-footer {
+        text-align: center;
     }
 }

@@ -39,60 +39,90 @@
                     $genres = $match['music']['top_genres'] ?? [];
                     $artists = $match['music']['top_artists'] ?? [];
                     $initials = strtoupper(substr(preg_replace('/[^a-z]/i', '', $match['partner_name'] ?? 'HB'), 0, 2));
+
+                    // --- Tlo z okladek: budujemy pojedyncza kopie pasa ---
+                    // Bierzemy do 14 okladek, zeby DOM nie urosl za bardzo.
+                    $coverArtists = array_slice($artists, 0, 14);
+                    $coverTiles = [];
+                    foreach ($coverArtists as $artist) {
+                        $imgUrl = $artist['artist_image_url'] ?? '';
+                        $artistName = htmlspecialchars($artist['artist_name'] ?? '', ENT_QUOTES, 'UTF-8');
+                        $nameLabel = $artistName !== '' ? '<span class="cover-name">' . $artistName . '</span>' : '';
+                if (!empty($imgUrl)) {
+                $coverTiles[] = '<div class="cover">'
+                . '<img src="' . htmlspecialchars($imgUrl, ENT_QUOTES, 'UTF-8') . '" alt="' . $artistName . '" loading="lazy" />'
+                . $nameLabel
+                . '</div>';
+                } else {
+                // fallback: brak zdjecia wykonawcy
+                $coverTiles[] = '<div class="cover cover--empty"><span class="material-symbols-outlined">music_note</span>' . $nameLabel . '</div>';
+                }
+                }
+                // brak okladek w ogole -> kilka placeholderow, zeby tlo nie bylo puste
+                if (empty($coverTiles)) {
+                $coverTiles = array_fill(0, 5, '<div class="cover cover--empty"><span class="material-symbols-outlined">graphic_eq</span></div>');
+                }
+                // Jedna kopia musi byc dosc szeroka, by wypelnic karte (min. 6 kafelkow).
+                $single = $coverTiles;
+                while (count($single) < 6) {
+                $single = array_merge($single, $coverTiles);
+                }
+                // Pojedyncza kopia paska; w markupie wypisujemy ja DWA razy
+                // (dwie identyczne kopie -> translateX(-50%) daje bezszwowa petle).
+                $coverCopy = implode('', $single);
                 ?>
                 <div class="match-card">
-                    <div class="match-top">
-                        <div class="match-avatar"><?= htmlspecialchars($initials ?: 'HB', ENT_QUOTES, 'UTF-8') ?></div>
-                        <div class="match-info">
-                            <a href="/matches/<?= $partnerId ?>" class="match-name"><?= $partnerName ?><?= $partnerAge ?></a>
-                            <p class="match-city">
-                                <span class="material-symbols-outlined">location_on</span>
-                                <?= $partnerCity ?>
-                            </p>
-                            <p class="match-date">Matched <?= htmlspecialchars($matchedAt, ENT_QUOTES, 'UTF-8') ?></p>
-                        </div>
-                        <div class="match-artists">
-                            <div class="artist-stack">
-                                <?php foreach (array_slice($artists, 0, 3) as $index => $artist): ?>
-                                <div class="artist-stack-item" style="z-index: <?= 3 + $index ?>;">
-                                    <?php if (!empty($artist['artist_image_url'])): ?>
-                                        <img src="<?= htmlspecialchars($artist['artist_image_url'], ENT_QUOTES, 'UTF-8') ?>" alt="<?= htmlspecialchars($artist['artist_name'] ?? '', ENT_QUOTES, 'UTF-8') ?>" />
-                                    <?php else: ?>
-                                        <span class="material-symbols-outlined">person</span>
-                                    <?php endif; ?>
-                                </div>
-                                <?php endforeach; ?>
+
+                    <!-- Tlo: przesuwany pasek okladek -->
+                    <div class="cover-bg" aria-hidden="true">
+                        <div class="cover-track"><?= $coverCopy ?><?= $coverCopy ?></div>
+                    </div>
+
+                    <!-- Nakladka dla czytelnosci -->
+                    <div class="cover-overlay" aria-hidden="true"></div>
+
+                    <!-- Tresc -->
+                    <div class="match-content">
+                        <div class="match-top">
+                            <div class="match-avatar"><?= htmlspecialchars($initials ?: 'HB', ENT_QUOTES, 'UTF-8') ?></div>
+                            <div class="match-info">
+                                <a href="/matches/<?= $partnerId ?>" class="match-name"><?= $partnerName ?><?= $partnerAge ?></a>
+                                <p class="match-city">
+                                    <span class="material-symbols-outlined">location_on</span>
+                                    <?= $partnerCity ?>
+                                </p>
+                                <p class="match-date">Matched <?= htmlspecialchars($matchedAt, ENT_QUOTES, 'UTF-8') ?></p>
                             </div>
                         </div>
-                    </div>
-                    <div class="match-socials">
-                        <?php if (!empty($match['spotify_handle'])): ?>
-                        <a href="https://open.spotify.com/user/<?= rawurlencode($match['spotify_handle']) ?>" target="_blank" class="social-tag social-spotify">
-                            <span class="material-symbols-outlined">graphic_eq</span>
-                            <?= htmlspecialchars($match['spotify_handle'], ENT_QUOTES, 'UTF-8') ?>
-                        </a>
-                        <?php endif; ?>
-                        <?php if (!empty($match['instagram_handle'])): ?>
-                        <a href="https://instagram.com/<?= rawurlencode(ltrim($match['instagram_handle'], '@')) ?>" target="_blank" class="social-tag social-instagram">
-                            <span class="material-symbols-outlined">alternate_email</span>
-                            <?= htmlspecialchars(ltrim($match['instagram_handle'], '@'), ENT_QUOTES, 'UTF-8') ?>
-                        </a>
-                        <?php endif; ?>
-                    </div>
-                    <div class="match-genres">
-                        <?php foreach ($genres as $genre): ?>
+                        <div class="match-socials">
+                            <?php if (!empty($match['spotify_handle'])): ?>
+                            <a href="https://open.spotify.com/user/<?= rawurlencode($match['spotify_handle']) ?>" target="_blank" class="social-tag social-spotify">
+                                <span class="material-symbols-outlined">graphic_eq</span>
+                                <?= htmlspecialchars($match['spotify_handle'], ENT_QUOTES, 'UTF-8') ?>
+                            </a>
+                            <?php endif; ?>
+                            <?php if (!empty($match['instagram_handle'])): ?>
+                            <a href="https://instagram.com/<?= rawurlencode(ltrim($match['instagram_handle'], '@')) ?>" target="_blank" class="social-tag social-instagram">
+                                <span class="material-symbols-outlined">alternate_email</span>
+                                <?= htmlspecialchars(ltrim($match['instagram_handle'], '@'), ENT_QUOTES, 'UTF-8') ?>
+                            </a>
+                            <?php endif; ?>
+                        </div>
+                        <div class="match-genres">
+                            <?php foreach ($genres as $genre): ?>
                             <span class="genre-tag"><?= htmlspecialchars($genre, ENT_QUOTES, 'UTF-8') ?></span>
-                        <?php endforeach; ?>
-                        <?php if (empty($genres)): ?>
+                            <?php endforeach; ?>
+                            <?php if (empty($genres)): ?>
                             <span class="genre-tag">No music data</span>
-                        <?php endif; ?>
-                    </div>
-                    <p class="match-bio"><?= $bio ?></p>
-                    <div class="match-footer">
-                        <a href="/matches/<?= $partnerId ?>" class="match-profile-link">
-                            <span class="material-symbols-outlined">person_search</span>
-                            View profile
-                        </a>
+                            <?php endif; ?>
+                        </div>
+                        <p class="match-bio"><?= $bio ?></p>
+                        <div class="match-footer">
+                            <a href="/matches/<?= $partnerId ?>" class="match-profile-link">
+                                <span class="material-symbols-outlined">person_search</span>
+                                View profile
+                            </a>
+                        </div>
                     </div>
                 </div>
                 <?php endforeach; ?>
