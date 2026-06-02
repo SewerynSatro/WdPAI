@@ -97,12 +97,71 @@ class MusicRepository extends Repository {
         return $query->fetch(PDO::FETCH_ASSOC) ?: null;
     }
 
+    private function getAlbumCoversByArtistsForUser(int $userId, array $artists): array
+    {
+        if (empty($artists)) {
+            return [];
+        }
+
+        $query = $this->database->connect()->prepare(
+            "
+            SELECT artist_name, album_image_url, rank, time_range
+            FROM user_tracks
+            WHERE user_id = :user_id
+              AND album_image_url IS NOT NULL
+              AND album_image_url != ''
+            ORDER BY
+                CASE time_range
+                    WHEN 'medium_term' THEN 1
+                    WHEN 'short_term' THEN 2
+                    ELSE 3
+                END,
+                rank
+            "
+        );
+        $query->execute(['user_id' => $userId]);
+        $tracks = $query->fetchAll(PDO::FETCH_ASSOC);
+
+        $coversByArtist = [];
+        foreach ($artists as $artist) {
+            $artistName = $artist['artist_name'] ?? '';
+            $normalizedArtist = strtolower($artistName);
+
+            if ($normalizedArtist === '') {
+                continue;
+            }
+
+            foreach ($tracks as $track) {
+                $trackArtist = strtolower($track['artist_name'] ?? '');
+                $cover = $track['album_image_url'] ?? '';
+
+                if ($cover === '' || !str_contains($trackArtist, $normalizedArtist)) {
+                    continue;
+                }
+
+                $coversByArtist[$artistName] ??= [];
+                if (!in_array($cover, $coversByArtist[$artistName], true)) {
+                    $coversByArtist[$artistName][] = $cover;
+                }
+            }
+        }
+
+        return $coversByArtist;
+    }
+
     public function getMusicPreviewForUser(int $userId): array
     {
+        $artists = array_slice($this->getArtistsForUser($userId, 'medium_term'), 0, 5);
+        $albumCovers = $this->getAlbumCoversByArtistsForUser($userId, $artists);
         $genres = $this->getGenresForUser($userId);
 
+        foreach ($artists as &$artist) {
+            $artist['album_covers'] = $albumCovers[$artist['artist_name'] ?? ''] ?? [];
+        }
+        unset($artist);
+
         return [
-            'top_artists' => array_slice($this->getArtistsForUser($userId, 'medium_term'), 0, 5),
+            'top_artists' => $artists,
             'top_tracks' => array_slice($this->getTopTracksForUser($userId, 'medium_term'), 0, 3),
             'short_term_tracks' => array_slice($this->getTopTracksForUser($userId, 'short_term'), 0, 3),
             'medium_term_tracks' => array_slice($this->getTopTracksForUser($userId, 'medium_term'), 0, 3),

@@ -11,7 +11,7 @@
     <?php include __DIR__ . '/partials/sidebar.html'; ?>
     <main class="dashboard-main">
         <div class="discover-wrap">
-        <?php if (empty($candidate)): ?>
+            <?php if (empty($candidate)): ?>
             <section class="profile-header">
                 <div class="profile-header-info">
                     <span class="profile-label">Discover</span>
@@ -24,8 +24,8 @@
                     </div>
                 </div>
             </section>
-        <?php else: ?>
-        <?php
+            <?php else: ?>
+            <?php
             $candidateName = htmlspecialchars($candidate['display_name'] ?? 'Unknown', ENT_QUOTES, 'UTF-8');
             $candidateAge = $candidate['age'] ? ', ' . (int) $candidate['age'] : '';
             $candidateCity = htmlspecialchars($candidate['city'] ?? 'Unknown city', ENT_QUOTES, 'UTF-8');
@@ -36,10 +36,41 @@
             $recentPlays = $musicPreview['recent_plays'] ?? [];
             $mainArtist = $artists[0]['artist_name'] ?? 'No music data yet';
             $mainArtistImage = $artists[0]['artist_image_url'] ?? '';
-            $musicDash = (int) round(((int) $musicSync / 100) * 452);
-            $sharedDash = (int) round(((int) $sharedTaste / 100) * 452);
-            $genreDash = (int) round(((int) $genreMatch / 100) * 452);
-            $vibeDash = (int) round(((int) $vibeMatch / 100) * 452);
+            $mainArtistCovers = $artists[0]['album_covers'] ?? [];
+            $mainArtistCoverTiles = [];
+            foreach (array_slice($mainArtistCovers, 0, 14) as $cover) {
+                if (!empty($cover)) {
+                    $mainArtistCoverTiles[] = '<div class="cover"><img src="' . htmlspecialchars($cover, ENT_QUOTES, 'UTF-8') . '" alt="" loading="lazy" /></div>';
+        }
+        }
+        // Fallback 1: brak listy okladek artysty -> uzyj okladek albumow z utworow kandydata
+        // (te dane juz mamy w sekcjach utworow, wiec karuzela zadziala bez zmian w backendzie).
+        if (empty($mainArtistCoverTiles)) {
+        $fallbackCovers = [];
+        foreach (array_merge($longTermTracks, $mediumTermTracks, $recentPlays) as $fbTrack) {
+        if (!empty($fbTrack['album_image_url'])) {
+        $fallbackCovers[] = $fbTrack['album_image_url'];
+        }
+        }
+        $fallbackCovers = array_values(array_unique($fallbackCovers));
+        foreach (array_slice($fallbackCovers, 0, 14) as $cover) {
+        $mainArtistCoverTiles[] = '<div class="cover"><img src="' . htmlspecialchars($cover, ENT_QUOTES, 'UTF-8') . '" alt="" loading="lazy" /></div>';
+        }
+        }
+        // Fallback 2: tylko zdjecie glownego artysty
+        if (empty($mainArtistCoverTiles) && !empty($mainArtistImage)) {
+        $mainArtistCoverTiles[] = '<div class="cover"><img src="' . htmlspecialchars($mainArtistImage, ENT_QUOTES, 'UTF-8') . '" alt="" loading="lazy" /></div>';
+        }
+        // Jedna kopia musi byc dosc szeroka, by wypelnic banner (min. 6 kafelkow).
+        $mainArtistCoverCopy = $mainArtistCoverTiles;
+        while (!empty($mainArtistCoverCopy) && count($mainArtistCoverCopy) < 6) {
+        $mainArtistCoverCopy = array_merge($mainArtistCoverCopy, $mainArtistCoverTiles);
+        }
+        $mainArtistCoverTrack = implode('', $mainArtistCoverCopy);
+        $musicDash = (int) round(((int) $musicSync / 100) * 452);
+        $sharedDash = (int) round(((int) $sharedTaste / 100) * 452);
+        $genreDash = (int) round(((int) $genreMatch / 100) * 452);
+        $vibeDash = (int) round(((int) $vibeMatch / 100) * 452);
         ?>
 
         <!-- Nagłówek profilu -->
@@ -55,11 +86,11 @@
                 </div>
                 <div class="dna-tags" style="margin-top: 0.625rem;">
                     <?php if (!empty($genres)): ?>
-                        <?php foreach ($genres as $genre): ?>
-                            <span class="dna-tag"><?= htmlspecialchars($genre, ENT_QUOTES, 'UTF-8') ?></span>
-                        <?php endforeach; ?>
+                    <?php foreach ($genres as $genre): ?>
+                    <span class="dna-tag"><?= htmlspecialchars($genre, ENT_QUOTES, 'UTF-8') ?></span>
+                    <?php endforeach; ?>
                     <?php else: ?>
-                        <span class="dna-tag">No music data</span>
+                    <span class="dna-tag">No music data</span>
                     <?php endif; ?>
                 </div>
             </div>
@@ -176,7 +207,13 @@
 
                 <!-- Lifetime Influence -->
                 <section class="influence-banner">
+                    <?php if (!empty($mainArtistCoverTrack)): ?>
+                    <div class="cover-bg" aria-hidden="true">
+                        <div class="cover-track"><?= $mainArtistCoverTrack ?><?= $mainArtistCoverTrack ?></div>
+                    </div>
+                    <?php else: ?>
                     <div class="influence-bg" style="background-image: url('<?= htmlspecialchars($mainArtistImage ?: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800&h=300&fit=crop', ENT_QUOTES, 'UTF-8') ?>')"></div>
+                    <?php endif; ?>
                     <div class="influence-overlay"></div>
                     <div class="influence-text">
                         <span class="influence-label">Lifetime Influence</span>
@@ -195,17 +232,21 @@
                     </div>
                     <div class="artists-grid">
                         <?php foreach ($artists as $artist): ?>
+                        <?php
+                            $albumCovers = $artist['album_covers'] ?? [];
+                            $artistCover = $albumCovers[0] ?? ($artist['artist_image_url'] ?? '');
+                        ?>
                         <div class="artist-card">
-                            <div class="artist-photo <?= !empty($artist['artist_image_url']) ? 'has-image' : '' ?>" style="<?php if (!empty($artist['artist_image_url'])): ?>background-image:url('<?= htmlspecialchars($artist['artist_image_url'], ENT_QUOTES, 'UTF-8') ?>')<?php endif; ?>">
-                                <?php if (empty($artist['artist_image_url'])): ?>
-                                    <span class="material-symbols-outlined">person</span>
+                            <div class="artist-photo <?= !empty($artistCover) ? 'has-image' : '' ?>" style="<?php if (!empty($artistCover)): ?>background-image:url('<?= htmlspecialchars($artistCover, ENT_QUOTES, 'UTF-8') ?>')<?php endif; ?>">
+                                <?php if (empty($artistCover)): ?>
+                                <span class="material-symbols-outlined">person</span>
                                 <?php endif; ?>
                             </div>
                             <span class="artist-name"><?= htmlspecialchars($artist['artist_name'] ?? '', ENT_QUOTES, 'UTF-8') ?></span>
                         </div>
                         <?php endforeach; ?>
                         <?php if (empty($artists)): ?>
-                            <span class="artist-name">No artists synced yet</span>
+                        <span class="artist-name">No artists synced yet</span>
                         <?php endif; ?>
                     </div>
                 </section>
@@ -221,7 +262,7 @@
                         <div class="track-row">
                             <div class="track-thumb <?= !empty($track['album_image_url']) ? 'has-image' : '' ?>" style="<?php if (!empty($track['album_image_url'])): ?>background-image:url('<?= htmlspecialchars($track['album_image_url'], ENT_QUOTES, 'UTF-8') ?>')<?php endif; ?>">
                                 <?php if (empty($track['album_image_url'])): ?>
-                                    <span class="material-symbols-outlined">album</span>
+                                <span class="material-symbols-outlined">album</span>
                                 <?php endif; ?>
                             </div>
                             <div class="track-info">
@@ -231,7 +272,7 @@
                         </div>
                         <?php endforeach; ?>
                         <?php if (empty($longTermTracks)): ?>
-                            <p class="track-artist">No tracks synced yet</p>
+                        <p class="track-artist">No tracks synced yet</p>
                         <?php endif; ?>
                     </section>
 
@@ -243,7 +284,7 @@
                         <div class="track-row">
                             <div class="track-thumb <?= !empty($track['album_image_url']) ? 'has-image' : '' ?>" style="<?php if (!empty($track['album_image_url'])): ?>background-image:url('<?= htmlspecialchars($track['album_image_url'], ENT_QUOTES, 'UTF-8') ?>')<?php endif; ?>">
                                 <?php if (empty($track['album_image_url'])): ?>
-                                    <span class="material-symbols-outlined">album</span>
+                                <span class="material-symbols-outlined">album</span>
                                 <?php endif; ?>
                             </div>
                             <div class="track-info">
@@ -253,7 +294,7 @@
                         </div>
                         <?php endforeach; ?>
                         <?php if (empty($mediumTermTracks)): ?>
-                            <p class="track-artist">No tracks synced yet</p>
+                        <p class="track-artist">No tracks synced yet</p>
                         <?php endif; ?>
                     </section>
 
@@ -265,7 +306,7 @@
                         <div class="track-row">
                             <div class="track-thumb <?= !empty($track['album_image_url']) ? 'has-image' : '' ?>" style="<?php if (!empty($track['album_image_url'])): ?>background-image:url('<?= htmlspecialchars($track['album_image_url'], ENT_QUOTES, 'UTF-8') ?>')<?php endif; ?>">
                                 <?php if (empty($track['album_image_url'])): ?>
-                                    <span class="material-symbols-outlined">album</span>
+                                <span class="material-symbols-outlined">album</span>
                                 <?php endif; ?>
                             </div>
                             <div class="track-info">
@@ -275,7 +316,7 @@
                         </div>
                         <?php endforeach; ?>
                         <?php if (empty($recentPlays)): ?>
-                            <p class="track-artist">No recent plays synced yet</p>
+                        <p class="track-artist">No recent plays synced yet</p>
                         <?php endif; ?>
                     </section>
 
@@ -285,8 +326,56 @@
 
         </div>
         <?php endif; ?>
-    </div>
-    </main>
 </div>
+</main>
+</div>
+<script>
+    document.querySelectorAll('.influence-banner .cover-track').forEach((track) => {
+        let frame = null;
+        let lastTime = null;
+        let offset = 0;
+        const speed = 42;
+
+        const getLoopWidth = () => track.scrollWidth / 2;
+
+        const step = (time) => {
+            if (lastTime !== null) {
+                offset -= ((time - lastTime) / 1000) * speed;
+                const loopWidth = getLoopWidth();
+
+                if (loopWidth > 0 && Math.abs(offset) >= loopWidth) {
+                    offset += loopWidth;
+                }
+
+                track.style.transform = `translateX(${offset}px)`;
+            }
+
+            lastTime = time;
+            frame = requestAnimationFrame(step);
+        };
+
+        const start = () => {
+            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || frame !== null) {
+                return;
+            }
+
+            lastTime = null;
+            frame = requestAnimationFrame(step);
+        };
+
+        const stop = () => {
+            if (frame === null) {
+                return;
+            }
+
+            cancelAnimationFrame(frame);
+            frame = null;
+            lastTime = null;
+        };
+
+        track.closest('.influence-banner')?.addEventListener('mouseenter', start);
+        track.closest('.influence-banner')?.addEventListener('mouseleave', stop);
+    });
+</script>
 </body>
 </html>
