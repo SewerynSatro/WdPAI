@@ -45,11 +45,10 @@ class SecurityController extends AppController {
             $email      = trim($_POST['email'] ?? '');
             $password   = $_POST['password'] ?? '';
             $password2  = $_POST['password2'] ?? '';
-            $firstName  = trim($_POST['firstName'] ?? '');
-            $lastName   = trim($_POST['lastName'] ?? '');
+            $displayName = trim($_POST['displayName'] ?? '');
 
             // Walidacja
-            if (!$email || !$password || !$firstName || !$lastName) {
+            if (!$email || !$password || !$displayName) {
                 return $this->render('register', [
                     'messages' => 'Wypełnij wszystkie pola.'
                 ]);
@@ -78,8 +77,7 @@ class SecurityController extends AppController {
             $this->usersRepository->createUser(
                 $email,
                 $hashedPassword,
-                $firstName,
-                $lastName
+                $displayName
             );
 
             $user = $this->usersRepository->getUserByEmail($email);

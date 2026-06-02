@@ -37,7 +37,7 @@ class UsersRepository extends Repository {
             SELECT
                 u.id,
                 u.email,
-                COALESCE(u.display_name, CONCAT(u.firstname, ' ', u.lastname)) AS display_name,
+                COALESCE(u.display_name, u.firstname) AS display_name,
                 up.bio,
                 up.city,
                 up.birth_date,
@@ -98,20 +98,18 @@ class UsersRepository extends Repository {
     public function createUser(
         string $email,
         string $hashedPassword,
-        string $firstname,
-        string $lastname,
+        string $displayName,
     ) {
-        $displayName = trim($firstname . ' ' . $lastname);
+        $displayName = trim($displayName);
 
         $query = $this->database->connect()->prepare(
             "
-            INSERT INTO users (firstname, lastname, email, password, display_name)
-            VALUES (?, ?, ?, ?, ?);
+            INSERT INTO users (firstname, email, password, display_name)
+            VALUES (?, ?, ?, ?);
             "
         );
         $query->execute([
-            $firstname,
-            $lastname,
+            $displayName,
             $email, 
             $hashedPassword,
             $displayName,
@@ -124,16 +122,13 @@ class UsersRepository extends Repository {
         string $displayName,
         ?string $hashedPassword = null
     ): void {
-        $parts = preg_split('/\s+/', trim($displayName), 2);
-        $firstname = $parts[0] ?? $displayName;
-        $lastname = $parts[1] ?? '';
+        $displayName = trim($displayName);
 
         $params = [
             'id' => $userId,
             'email' => $email,
             'display_name' => $displayName,
-            'firstname' => $firstname,
-            'lastname' => $lastname,
+            'firstname' => $displayName,
         ];
         $passwordSql = '';
 
@@ -148,7 +143,6 @@ class UsersRepository extends Repository {
             SET email = :email,
                 display_name = :display_name,
                 firstname = :firstname,
-                lastname = :lastname,
                 updated_at = CURRENT_TIMESTAMP
                 {$passwordSql}
             WHERE id = :id

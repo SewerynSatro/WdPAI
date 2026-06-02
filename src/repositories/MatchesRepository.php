@@ -36,7 +36,7 @@ class MatchesRepository extends Repository {
                     WHEN m.user_a_id = :user_id_1 THEN m.user_b_id
                     ELSE m.user_a_id
                 END AS partner_id,
-                COALESCE(u.display_name, CONCAT(u.firstname, ' ', u.lastname)) AS partner_name,
+                COALESCE(u.display_name, u.firstname) AS partner_name,
                 up.city AS partner_city,
                 up.birth_date AS partner_birth_date,
                 up.bio AS partner_bio,
@@ -71,7 +71,7 @@ class MatchesRepository extends Repository {
                 m.id AS match_id,
                 m.matched_at,
                 u.id AS partner_id,
-                COALESCE(u.display_name, CONCAT(u.firstname, ' ', u.lastname)) AS partner_name,
+                COALESCE(u.display_name, u.firstname) AS partner_name,
                 u.email AS partner_email,
                 up.bio AS partner_bio,
                 up.city AS partner_city,

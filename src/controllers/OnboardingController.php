@@ -67,7 +67,7 @@ class OnboardingController extends AppController {
             $currentEmail = $email !== '' ? $email : ($user['email'] ?? $_SESSION['user_email']);
             $currentDisplayName = $displayName !== ''
                 ? $displayName
-                : ($user['display_name'] ?? trim(($user['firstname'] ?? '') . ' ' . ($user['lastname'] ?? '')));
+                : ($user['display_name'] ?? ($user['firstname'] ?? ''));
 
             if (filter_var($currentEmail, FILTER_VALIDATE_EMAIL)) {
                 $this->usersRepository->updateAccount($userId, $currentEmail, $currentDisplayName);

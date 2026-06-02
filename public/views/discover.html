@@ -234,14 +234,28 @@
                         <?php foreach ($artists as $artist): ?>
                         <?php
                             $albumCovers = $artist['album_covers'] ?? [];
-                            $artistCover = $albumCovers[0] ?? ($artist['artist_image_url'] ?? '');
+                            $visibleCovers = array_slice($albumCovers, 0, 4);
+                            $hiddenCovers = max(0, count($albumCovers) - count($visibleCovers));
                         ?>
                         <div class="artist-card">
-                            <div class="artist-photo <?= !empty($artistCover) ? 'has-image' : '' ?>" style="<?php if (!empty($artistCover)): ?>background-image:url('<?= htmlspecialchars($artistCover, ENT_QUOTES, 'UTF-8') ?>')<?php endif; ?>">
-                                <?php if (empty($artistCover)): ?>
+                            <?php if (!empty($visibleCovers)): ?>
+                            <div class="artist-photo artist-album-covers">
+                                <?php foreach ($visibleCovers as $coverIndex => $cover): ?>
+                                <div class="artist-cover-tile">
+                                    <img src="<?= htmlspecialchars($cover, ENT_QUOTES, 'UTF-8') ?>" alt="" loading="lazy">
+                                    <?php if ($coverIndex === count($visibleCovers) - 1 && $hiddenCovers > 0): ?>
+                                    <span class="artist-cover-more">+<?= $hiddenCovers ?></span>
+                                    <?php endif; ?>
+                                </div>
+                                <?php endforeach; ?>
+                            </div>
+                            <?php else: ?>
+                            <div class="artist-photo <?= !empty($artist['artist_image_url']) ? 'has-image' : '' ?>" style="<?php if (!empty($artist['artist_image_url'])): ?>background-image:url('<?= htmlspecialchars($artist['artist_image_url'], ENT_QUOTES, 'UTF-8') ?>')<?php endif; ?>">
+                                <?php if (empty($artist['artist_image_url'])): ?>
                                 <span class="material-symbols-outlined">person</span>
                                 <?php endif; ?>
                             </div>
+                            <?php endif; ?>
                             <span class="artist-name"><?= htmlspecialchars($artist['artist_name'] ?? '', ENT_QUOTES, 'UTF-8') ?></span>
                         </div>
                         <?php endforeach; ?>
