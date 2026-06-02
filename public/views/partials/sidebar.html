@@ -62,3 +62,53 @@
         Logout
     </a>
 </nav>
+<script>
+    window.heartbeatCaptureLocation = function(options = {}) {
+        const label = options.labelId ? document.getElementById(options.labelId) : null;
+
+        if (!navigator.geolocation) {
+            if (label) label.textContent = 'Location not supported';
+            return;
+        }
+
+        if (!options.force && sessionStorage.getItem('heartbeatLocationSynced')) {
+            return;
+        }
+
+        if (label) label.textContent = 'Getting location...';
+
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const latitude = position.coords.latitude;
+                const longitude = position.coords.longitude;
+
+                ['lat', 'settings-lat'].forEach((id) => {
+                    const field = document.getElementById(id);
+                    if (field) field.value = latitude;
+                });
+                ['lng', 'settings-lng'].forEach((id) => {
+                    const field = document.getElementById(id);
+                    if (field) field.value = longitude;
+                });
+
+                fetch('/settings/location', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({ latitude, longitude })
+                }).then(() => {
+                    sessionStorage.setItem('heartbeatLocationSynced', '1');
+                    if (label) label.textContent = 'Location saved';
+                }).catch(() => {
+                    if (label) label.textContent = 'Could not save location';
+                });
+            },
+            () => {
+                sessionStorage.setItem('heartbeatLocationSynced', 'denied');
+                if (label) label.textContent = 'Location access denied';
+            },
+            { enableHighAccuracy: false, maximumAge: 300000, timeout: 10000 }
+        );
+    };
+
+    window.heartbeatCaptureLocation();
+</script>

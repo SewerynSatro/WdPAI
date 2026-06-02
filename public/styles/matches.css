@@ -251,7 +251,7 @@
     color: var(--primary);
 }
 
-.match-city {
+.match-distance {
     display: flex;
     align-items: center;
     gap: 0.25rem;
@@ -261,7 +261,7 @@
     text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
 }
 
-.match-city .material-symbols-outlined {
+.match-distance .material-symbols-outlined {
     font-size: 0.875rem;
 }
 
@@ -401,7 +401,7 @@
         text-align: center;
     }
 
-    .match-city {
+    .match-distance {
         justify-content: center;
     }
 

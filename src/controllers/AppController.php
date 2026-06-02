@@ -67,7 +67,6 @@ class AppController {
         $hasRequiredProfile = trim($user['display_name'] ?? '') !== ''
             && filter_var($user['email'] ?? '', FILTER_VALIDATE_EMAIL)
             && trim($profile['bio'] ?? '') !== ''
-            && trim($profile['city'] ?? '') !== ''
             && trim($profile['birth_date'] ?? '') !== ''
             && trim($profile['gender'] ?? '') !== ''
             && trim($profile['looking_for'] ?? '') !== '';

@@ -78,18 +78,44 @@ class SettingsController extends AppController
 
         $this->profilesRepository->updateProfile($userId, [
             'bio' => $this->nullablePostValue('bio'),
-            'city' => $this->nullablePostValue('city'),
             'birth_date' => $this->nullablePostValue('birth_date'),
             'gender' => $this->nullablePostValue('gender'),
             'looking_for' => $this->nullablePostValue('looking_for'),
             'instagram_handle' => $this->nullablePostValue('instagram_handle'),
             'facebook_handle' => $this->nullablePostValue('facebook_handle'),
             'spotify_handle' => $this->nullablePostValue('spotify_handle'),
+            'latitude' => $this->nullableFloatPostValue('latitude'),
+            'longitude' => $this->nullableFloatPostValue('longitude'),
+            'max_distance_km' => $this->boundedIntPostValue('max_distance_km', 5, 500, 50),
         ]);
 
         $url = "http://$_SERVER[HTTP_HOST]";
         header("Location: {$url}/settings");
         exit();
+    }
+
+    public function updateLocation()
+    {
+        $this->requireLogin();
+
+        $userId = (int) $_SESSION['user_id'];
+        $latitude = $this->nullableFloatPostValue('latitude');
+        $longitude = $this->nullableFloatPostValue('longitude');
+
+        if ($latitude === null || $longitude === null) {
+            http_response_code(400);
+            header('Content-Type: application/json');
+            echo json_encode(['ok' => false]);
+            return;
+        }
+
+        $this->profilesRepository->updateProfile($userId, [
+            'latitude' => $latitude,
+            'longitude' => $longitude,
+        ]);
+
+        header('Content-Type: application/json');
+        echo json_encode(['ok' => true]);
     }
 
     public function connectProvider(string $provider)
@@ -177,5 +203,21 @@ class SettingsController extends AppController
     {
         $value = trim($_POST[$key] ?? '');
         return $value === '' ? null : $value;
+    }
+
+    private function nullableFloatPostValue(string $key): ?float
+    {
+        $value = trim($_POST[$key] ?? '');
+        return $value === '' || !is_numeric($value) ? null : (float) $value;
+    }
+
+    private function boundedIntPostValue(string $key, int $min, int $max, int $default): int
+    {
+        $value = trim($_POST[$key] ?? '');
+        if ($value === '' || !is_numeric($value)) {
+            return $default;
+        }
+
+        return max($min, min($max, (int) $value));
     }
 }

@@ -21,7 +21,6 @@ CREATE TABLE IF NOT EXISTS user_profiles (
     id SERIAL PRIMARY KEY,
     user_id INTEGER NOT NULL UNIQUE REFERENCES users(id) ON DELETE CASCADE,
     bio TEXT,
-    city VARCHAR(100),
     birth_date DATE,
     gender VARCHAR(20),
     looking_for VARCHAR(20),
@@ -31,6 +30,7 @@ CREATE TABLE IF NOT EXISTS user_profiles (
     spotify_handle VARCHAR(100),
     latitude DOUBLE PRECISION,
     longitude DOUBLE PRECISION,
+    max_distance_km INTEGER NOT NULL DEFAULT 50,
     onboarding_completed BOOLEAN NOT NULL DEFAULT FALSE,
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP

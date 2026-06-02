@@ -33,7 +33,6 @@ class ProfilesRepository extends Repository {
     {
         $allowedFields = [
             'bio',
-            'city',
             'birth_date',
             'gender',
             'looking_for',
@@ -43,6 +42,7 @@ class ProfilesRepository extends Repository {
             'spotify_handle',
             'latitude',
             'longitude',
+            'max_distance_km',
             'onboarding_completed',
         ];
 

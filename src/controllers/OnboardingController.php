@@ -44,18 +44,17 @@ class OnboardingController extends AppController {
         $email = trim($_POST['email'] ?? '');
         $birthDate = trim($_POST['birth_date'] ?? '');
         $bio = $this->nullablePostValue('bio');
-        $city = $this->nullablePostValue('city');
         $gender = $this->nullablePostValue('gender');
         $lookingFor = $this->nullablePostValue('looking_for');
         $instagram = $this->nullablePostValue('instagram_handle');
         $facebook = $this->nullablePostValue('facebook_handle');
         $spotify = $this->nullablePostValue('spotify_handle');
+        $maxDistanceKm = $this->boundedIntPostValue('max_distance_km', 5, 500, 50);
         $spotifyConnected = $this->providerAccountsRepository->isConnected($userId, 'spotify');
         $missing = $this->missingRequiredFields([
             'displayName' => $displayName,
             'email' => $email,
             'bio' => $bio,
-            'city' => $city,
             'birthDate' => $birthDate,
             'gender' => $gender,
             'lookingFor' => $lookingFor,
@@ -77,7 +76,6 @@ class OnboardingController extends AppController {
 
         $this->profilesRepository->updateProfile($userId, [
             'bio' => $bio,
-            'city' => $city,
             'birth_date' => $birthDate ?: null,
             'gender' => $gender,
             'looking_for' => $lookingFor,
@@ -86,6 +84,7 @@ class OnboardingController extends AppController {
             'spotify_handle' => $spotify,
             'latitude' => $this->nullableFloatPostValue('latitude'),
             'longitude' => $this->nullableFloatPostValue('longitude'),
+            'max_distance_km' => $maxDistanceKm,
             'onboarding_completed' => empty($missing),
         ]);
 
@@ -112,6 +111,15 @@ class OnboardingController extends AppController {
         return $value === '' || !is_numeric($value) ? null : (float) $value;
     }
 
+    private function boundedIntPostValue(string $key, int $min, int $max, int $default): int {
+        $value = trim($_POST[$key] ?? '');
+        if ($value === '' || !is_numeric($value)) {
+            return $default;
+        }
+
+        return max($min, min($max, (int) $value));
+    }
+
     private function missingRequiredFields(array $data): array {
         $missing = [];
 
@@ -123,9 +131,6 @@ class OnboardingController extends AppController {
         }
         if (!$data['bio']) {
             $missing[] = 'bio';
-        }
-        if (!$data['city']) {
-            $missing[] = 'city';
         }
         if ($data['birthDate'] === '') {
             $missing[] = 'date of birth';

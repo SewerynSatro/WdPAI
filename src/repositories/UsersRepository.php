@@ -39,26 +39,60 @@ class UsersRepository extends Repository {
                 u.email,
                 COALESCE(u.display_name, u.firstname) AS display_name,
                 up.bio,
-                up.city,
                 up.birth_date,
                 up.gender,
                 up.looking_for,
                 up.instagram_handle,
                 up.facebook_handle,
-                up.spotify_handle
+                up.spotify_handle,
+                CASE
+                    WHEN current_profile.latitude IS NOT NULL
+                     AND current_profile.longitude IS NOT NULL
+                     AND up.latitude IS NOT NULL
+                     AND up.longitude IS NOT NULL
+                    THEN ROUND((
+                        6371 * ACOS(LEAST(1, GREATEST(-1,
+                            COS(RADIANS(current_profile.latitude))
+                            * COS(RADIANS(up.latitude))
+                            * COS(RADIANS(up.longitude) - RADIANS(current_profile.longitude))
+                            + SIN(RADIANS(current_profile.latitude))
+                            * SIN(RADIANS(up.latitude))
+                        )))
+                    )::numeric, 1)
+                    ELSE NULL
+                END AS distance_km
             FROM users u
             LEFT JOIN user_profiles up ON up.user_id = u.id
+            LEFT JOIN user_profiles current_profile ON current_profile.user_id = :current_user_id
             WHERE u.id != :user_id
               AND u.is_active = TRUE
               AND COALESCE(up.onboarding_completed, FALSE) = TRUE
               AND u.id NOT IN (
                   SELECT target_id FROM swipes WHERE swiper_id = :swiper_id
               )
+              AND (
+                  current_profile.latitude IS NULL
+                  OR current_profile.longitude IS NULL
+                  OR (
+                      up.latitude IS NOT NULL
+                      AND up.longitude IS NOT NULL
+                      AND (
+                          6371 * ACOS(LEAST(1, GREATEST(-1,
+                              COS(RADIANS(current_profile.latitude))
+                              * COS(RADIANS(up.latitude))
+                              * COS(RADIANS(up.longitude) - RADIANS(current_profile.longitude))
+                              + SIN(RADIANS(current_profile.latitude))
+                              * SIN(RADIANS(up.latitude))
+                          )))
+                      ) <= COALESCE(current_profile.max_distance_km, 50)
+                  )
+              )
             ORDER BY RANDOM()
             LIMIT 1
             "
         );
         $query->execute([
+            'current_user_id' => $userId,
             'user_id' => $userId,
             'swiper_id' => $userId,
         ]);
