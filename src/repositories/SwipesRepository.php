@@ -60,4 +60,12 @@ class SwipesRepository extends Repository {
 
         return (int) $query->fetchColumn() === 2;
     }
+
+    public function countAll(): int
+    {
+        $query = $this->database->connect()->prepare("SELECT COUNT(*) FROM swipes");
+        $query->execute();
+
+        return (int) $query->fetchColumn();
+    }
 }

@@ -155,4 +155,12 @@ class MatchesRepository extends Repository {
 
         return (bool) $query->fetchColumn();
     }
+
+    public function countAll(): int
+    {
+        $query = $this->database->connect()->prepare("SELECT COUNT(*) FROM matches");
+        $query->execute();
+
+        return (int) $query->fetchColumn();
+    }
 }

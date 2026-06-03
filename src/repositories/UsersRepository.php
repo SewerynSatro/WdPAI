@@ -23,7 +23,7 @@ class UsersRepository extends Repository {
     {
         $query = $this->database->connect()->prepare(
             "
-            SELECT id, email, firstname, display_name, is_active
+            SELECT id, email, firstname, display_name, role, is_active
             FROM users
             WHERE id = :id
             "
@@ -38,7 +38,7 @@ class UsersRepository extends Repository {
     {
         $query = $this->database->connect()->prepare(
             "
-            SELECT id, email, firstname, display_name, is_active
+            SELECT id, email, firstname, display_name, role, is_active
             FROM users;
             "
         );
@@ -204,7 +204,7 @@ class UsersRepository extends Repository {
     {
         $query = $this->database->connect()->prepare(
             "
-            SELECT id, email, firstname, display_name, is_active
+            SELECT id, email, firstname, display_name, role, is_active
             FROM users
             WHERE email = :email
             "
@@ -220,7 +220,7 @@ class UsersRepository extends Repository {
     {
         $query = $this->database->connect()->prepare(
             "
-            SELECT id, email, password, display_name, is_active
+            SELECT id, email, password, display_name, role, is_active
             FROM users
             WHERE email = :email
             "
@@ -301,5 +301,37 @@ class UsersRepository extends Repository {
             "
         );
         $query->execute($params);
+    }
+
+    public function countAll(): int
+    {
+        $query = $this->database->connect()->prepare("SELECT COUNT(*) FROM users");
+        $query->execute();
+
+        return (int) $query->fetchColumn();
+    }
+
+    public function countActive(): int
+    {
+        $query = $this->database->connect()->prepare("SELECT COUNT(*) FROM users WHERE is_active = TRUE");
+        $query->execute();
+
+        return (int) $query->fetchColumn();
+    }
+
+    public function getLatestUsers(int $limit = 8): array
+    {
+        $limit = max(1, min(25, $limit));
+        $query = $this->database->connect()->prepare(
+            "
+            SELECT id, email, display_name, role, is_active, created_at
+            FROM users
+            ORDER BY created_at DESC, id DESC
+            LIMIT {$limit}
+            "
+        );
+        $query->execute();
+
+        return $query->fetchAll(PDO::FETCH_ASSOC);
     }
 }

@@ -7,6 +7,7 @@ require_once 'src/controllers/MatchesController.php';
 require_once 'src/controllers/ProfileController.php';
 require_once 'src/controllers/SettingsController.php';
 require_once 'src/controllers/OnboardingController.php';
+require_once 'src/controllers/AdminController.php';
 
 
 // TODO musimy zapewnic, ze utworzony 
@@ -96,6 +97,10 @@ class Routing {
                 break;
             case 'dashboard':
                 $controller = new DashboardController();
+                $controller->index();
+                break;
+            case 'admin':
+                $controller = new AdminController();
                 $controller->index();
                 break;
             case 'login':

@@ -130,6 +130,31 @@ class AppController {
         return true;
     }
 
+    protected function requireAdmin(): bool
+    {
+        $this->requireLogin();
+
+        if (!$this->isCurrentUserAdmin()) {
+            http_response_code(403);
+            include 'public/views/403.html';
+            exit();
+        }
+
+        return true;
+    }
+
+    protected function isCurrentUserAdmin(): bool
+    {
+        if (session_status() !== PHP_SESSION_ACTIVE || !isset($_SESSION['user_id'])) {
+            return false;
+        }
+
+        $usersRepository = UsersRepository::getInstance();
+        $user = $usersRepository->getUserById((int) $_SESSION['user_id']);
+
+        return strtoupper((string) ($user['role'] ?? '')) === 'ADMIN';
+    }
+
     protected function hasCompletedOnboarding(int $userId): bool
     {
         $profilesRepository = new ProfilesRepository();
@@ -164,6 +189,7 @@ class AppController {
         $output = "";
                  
         if(file_exists($templatePath)){
+            $variables['isAdmin'] ??= $this->isCurrentUserAdmin();
             extract($variables);
             // ["tab_name" => $title]
 

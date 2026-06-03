@@ -221,4 +221,21 @@ class MusicRepository extends Repository {
             'top_genres' => array_slice(array_keys($genres), 0, 3),
         ];
     }
+
+    public function getMostPopularArtist(): ?array
+    {
+        $query = $this->database->connect()->prepare(
+            "
+            SELECT artist_name, artist_image_url, COUNT(DISTINCT user_id) AS listeners
+            FROM user_artists
+            WHERE artist_name IS NOT NULL AND artist_name != ''
+            GROUP BY artist_name, artist_image_url
+            ORDER BY listeners DESC, artist_name ASC
+            LIMIT 1
+            "
+        );
+        $query->execute();
+
+        return $query->fetch(PDO::FETCH_ASSOC) ?: null;
+    }
 }

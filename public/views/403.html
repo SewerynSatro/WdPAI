@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <?php include __DIR__ . '/partials/head.html'; ?>
+    <style>
+        .error-page {
+            align-items: center;
+            display: flex;
+            min-height: 100vh;
+            justify-content: center;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .error-page h1 {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .error-page p {
+            color: var(--text-muted);
+            margin-bottom: 1.25rem;
+        }
+    </style>
+</head>
+<body>
+<main class="error-page">
+    <div>
+        <h1>403</h1>
+        <p>You do not have access to this page.</p>
+        <a href="/discover">Back to Discover</a>
+    </div>
+</main>
+</body>
+</html>

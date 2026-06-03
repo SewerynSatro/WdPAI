@@ -29,6 +29,14 @@
                 Settings
                 </a>
             </li>
+            <?php if (!empty($isAdmin)): ?>
+            <li>
+                <a href="/admin" <?= ($activePage ?? '') === 'admin' ? 'class="active"' : '' ?>>
+                <span class="material-symbols-outlined">admin_panel_settings</span>
+                Admin
+                </a>
+            </li>
+            <?php endif; ?>
         </ul>
     </div>
     <div class="sidebar-bottom">
@@ -57,6 +65,12 @@
     <span class="material-symbols-outlined">settings</span>
     Settings
     </a>
+    <?php if (!empty($isAdmin)): ?>
+    <a href="/admin" <?= ($activePage ?? '') === 'admin' ? 'class="active"' : '' ?>>
+    <span class="material-symbols-outlined">admin_panel_settings</span>
+    Admin
+    </a>
+    <?php endif; ?>
     <a href="/logout">
         <span class="material-symbols-outlined">logout</span>
         Logout

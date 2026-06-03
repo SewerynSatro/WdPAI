@@ -76,4 +76,25 @@ class ProviderAccountsRepository extends Repository {
             'token_expires_at' => $expiresAt,
         ]);
     }
+
+    public function countConnectedAccounts(?string $providerKey = null): int
+    {
+        if ($providerKey === null) {
+            $query = $this->database->connect()->prepare("SELECT COUNT(*) FROM provider_accounts");
+            $query->execute();
+
+            return (int) $query->fetchColumn();
+        }
+
+        $query = $this->database->connect()->prepare(
+            "
+            SELECT COUNT(*)
+            FROM provider_accounts
+            WHERE provider_key = :provider_key
+            "
+        );
+        $query->execute(['provider_key' => $providerKey]);
+
+        return (int) $query->fetchColumn();
+    }
 }
