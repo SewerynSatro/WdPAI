@@ -65,7 +65,8 @@ class MatchesRepository extends Repository {
             END
             LEFT JOIN user_profiles up ON up.user_id = u.id
             LEFT JOIN user_profiles current_profile ON current_profile.user_id = :current_user_id
-            WHERE m.user_a_id = :user_id_3 OR m.user_b_id = :user_id_4
+            WHERE (m.user_a_id = :user_id_3 OR m.user_b_id = :user_id_4)
+              AND u.is_active = TRUE
             ORDER BY m.matched_at DESC
             "
         );
@@ -122,6 +123,7 @@ class MatchesRepository extends Repository {
                 OR
                 (m.user_a_id = :partner_id_2 AND m.user_b_id = :user_id_2)
             )
+              AND u.is_active = TRUE
             LIMIT 1
             "
         );

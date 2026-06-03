@@ -43,6 +43,44 @@ body {
     pointer-events: none;
 }
 
+.profile-report-form {
+    margin: 0;
+    position: absolute;
+    right: 1rem;
+    top: 1rem;
+    z-index: 3;
+}
+
+.profile-report-btn {
+    align-items: center;
+    background: #302a2a;
+    border: 1px solid #731f1c;
+    border-radius: 0.75rem;
+    box-shadow: 0 0 18px rgba(220, 38, 38, 0.24);
+    color: #731f1c;
+    cursor: pointer;
+    display: inline-flex;
+    height: 2.5rem;
+    justify-content: center;
+    padding: 0;
+    transition: background 0.15s, border-color 0.15s, color 0.15s, transform 0.15s;
+    width: 2.5rem;
+}
+
+.profile-report-btn:hover {
+    background: #eb3f38;
+    border-color: #f87171;
+    color: #fff;
+}
+
+.profile-report-btn:active {
+    transform: scale(0.96);
+}
+
+.profile-report-btn .material-symbols-outlined {
+    font-size: 1.35rem;
+}
+
 .profile-label {
     font-size: 0.6875rem;
     font-weight: 700;
@@ -196,15 +234,17 @@ body {
     transform: scale(0.97);
 }
 
-.action-pass {
+.discover-actions .action-btn.action-pass {
     flex: 1;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.20);
-    color: rgba(255, 255, 255, 0.50);
+    background: rgba(246, 80, 189, 0.10);
+    border: 1px solid rgba(246, 80, 189, 0.20);
+    color: var(--secondary);
+    box-shadow: none;
 }
 
-.action-pass:hover {
-    background: rgba(255, 255, 255, 0.10);
+.discover-actions .action-btn.action-pass:hover {
+    background: rgba(246, 80, 189, 0.16);
+    border-color: rgba(246, 80, 189, 0.34);
 }
 
 .action-like {
@@ -883,5 +923,19 @@ body {
     .action-btn {
         padding-left: 0.75rem;
         padding-right: 0.75rem;
+    }
+
+    .discover-actions {
+        flex-wrap: nowrap;
+    }
+
+    .profile-report-form {
+        right: 0.625rem;
+        top: 0.625rem;
+    }
+
+    .profile-report-btn {
+        height: 2.25rem;
+        width: 2.25rem;
     }
 }

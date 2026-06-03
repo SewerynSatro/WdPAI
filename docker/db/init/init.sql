@@ -141,3 +141,21 @@ CREATE TABLE IF NOT EXISTS matches (
 );
 CREATE INDEX IF NOT EXISTS idx_matches_user_a ON matches (user_a_id);
 CREATE INDEX IF NOT EXISTS idx_matches_user_b ON matches (user_b_id);
+
+CREATE TABLE IF NOT EXISTS user_reports (
+    id SERIAL PRIMARY KEY,
+    reporter_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    reported_user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    reason VARCHAR(255) NOT NULL DEFAULT 'Reported from profile',
+    status VARCHAR(20) NOT NULL DEFAULT 'OPEN',
+    reviewed_by INTEGER REFERENCES users(id) ON DELETE SET NULL,
+    reviewed_at TIMESTAMP WITH TIME ZONE,
+    action_note VARCHAR(255),
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (reporter_id, reported_user_id),
+    CHECK (reporter_id != reported_user_id),
+    CHECK (status IN ('OPEN', 'RESOLVED'))
+);
+CREATE INDEX IF NOT EXISTS idx_user_reports_reported ON user_reports (reported_user_id);
+CREATE INDEX IF NOT EXISTS idx_user_reports_status ON user_reports (status);

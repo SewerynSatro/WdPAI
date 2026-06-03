@@ -342,6 +342,11 @@
 /* --- Footer --- */
 .match-footer {
     padding-top: 0.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    flex-wrap: wrap;
 }
 
 .match-profile-link {
@@ -362,6 +367,34 @@
 
 .match-profile-link .material-symbols-outlined {
     font-size: 1rem;
+}
+
+.match-report-form {
+    margin: 0;
+}
+
+.match-report-btn {
+    align-items: center;
+    background: rgba(246, 80, 189, 0.10);
+    border: 1px solid rgba(246, 80, 189, 0.28);
+    border-radius: var(--radius-full);
+    color: #ff84d8;
+    cursor: pointer;
+    display: inline-flex;
+    font-family: inherit;
+    font-size: 0.72rem;
+    font-weight: 700;
+    gap: 0.35rem;
+    padding: 0.35rem 0.65rem;
+    text-transform: uppercase;
+}
+
+.match-report-btn:hover {
+    background: rgba(246, 80, 189, 0.18);
+}
+
+.match-report-btn .material-symbols-outlined {
+    font-size: 0.95rem;
 }
 
 /* --- Reduced motion: nie animuj paska --- */
@@ -412,5 +445,9 @@
 
     .match-footer {
         text-align: center;
+        justify-content: center;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
     }
 }

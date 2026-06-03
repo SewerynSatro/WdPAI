@@ -8,6 +8,7 @@ require_once 'src/controllers/ProfileController.php';
 require_once 'src/controllers/SettingsController.php';
 require_once 'src/controllers/OnboardingController.php';
 require_once 'src/controllers/AdminController.php';
+require_once 'src/controllers/ReportsController.php';
 
 
 // TODO musimy zapewnic, ze utworzony 
@@ -47,7 +48,19 @@ class Routing {
             return;
         }
 
+        if ($method === 'GET' && preg_match('/^admin\/reports\/(\d+)$/', $path, $m)) {
+            $controller = new AdminController();
+            $controller->reportedUser((int)$m[1]);
+            return;
+        }
+
         if ($method === 'POST') {
+            if (preg_match('/^admin\/users\/(\d+)\/ban$/', $path, $m)) {
+                $controller = new AdminController();
+                $controller->banUser((int)$m[1]);
+                return;
+            }
+
             switch ($path) {
                 case 'login':
                     $controller = new SecurityController();
@@ -68,6 +81,10 @@ class Routing {
                 case 'discover/swipe':
                     $controller = new DiscoverController();
                     $controller->swipe();
+                    return;
+                case 'reports':
+                    $controller = new ReportsController();
+                    $controller->create();
                     return;
                 case 'settings/account':
                     $controller = new SettingsController();

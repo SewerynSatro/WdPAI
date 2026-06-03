@@ -124,6 +124,15 @@
                                 <span class="material-symbols-outlined">person_search</span>
                                 View profile
                             </a>
+                            <form method="POST" action="/reports" class="match-report-form">
+                                <input type="hidden" name="reported_user_id" value="<?= $partnerId ?>">
+                                <input type="hidden" name="reason" value="Reported from matches">
+                                <input type="hidden" name="redirect_to" value="/matches">
+                                <button type="submit" class="match-report-btn" onclick="return confirm('Report this profile to admins?')">
+                                    <span class="material-symbols-outlined">flag</span>
+                                    Report
+                                </button>
+                            </form>
                         </div>
                     </div>
                 </div>

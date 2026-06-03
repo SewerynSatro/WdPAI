@@ -53,6 +53,11 @@ class SecurityController extends AppController {
                 return $this->renderLogin(self::AUTH_ERROR_MESSAGE, 401);
             }
 
+            if (empty($user['is_active'])) {
+                $this->recordFailedLogin($email, 'inactive_user');
+                return $this->renderLogin(self::AUTH_ERROR_MESSAGE, 401);
+            }
+
             $this->startSession();
             session_regenerate_id(true);
             $this->clearFailedLogin($email);

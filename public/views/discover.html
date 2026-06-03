@@ -3,7 +3,7 @@
 <head>
     <?php include __DIR__ . '/partials/head.html'; ?>
     <link rel="stylesheet" href="public/styles/partials/sidebar.css" />
-    <link rel="stylesheet" href="public/styles/discover.css" />
+    <link rel="stylesheet" href="/public/styles/discover.css?v=report-buttons-2" />
 </head>
 <body>
 <div class="dashboard-layout">
@@ -77,6 +77,14 @@
 
         <!-- Nagłówek profilu -->
         <section class="profile-header">
+            <form method="POST" action="/reports" class="profile-report-form">
+                <input type="hidden" name="reported_user_id" value="<?= (int) $candidate['id'] ?>">
+                <input type="hidden" name="reason" value="Reported from discover">
+                <input type="hidden" name="redirect_to" value="/discover">
+                <button class="profile-report-btn" type="submit" onclick="return confirm('Report this profile to admins?')" aria-label="Report profile" title="Report profile">
+                    <span class="material-symbols-outlined">flag</span>
+                </button>
+            </form>
             <div class="profile-header-info">
                 <span class="profile-label">Active Profile</span>
                 <h1 class="profile-name"><?= $candidateName ?><?= $candidateAge ?></h1>

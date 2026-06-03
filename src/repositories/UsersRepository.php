@@ -334,4 +334,46 @@ class UsersRepository extends Repository {
 
         return $query->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    public function getAdminUserDetails(int $userId)
+    {
+        $query = $this->database->connect()->prepare(
+            "
+            SELECT
+                u.id,
+                u.email,
+                COALESCE(u.display_name, u.firstname) AS display_name,
+                u.role,
+                u.is_active,
+                u.created_at,
+                up.bio,
+                up.birth_date,
+                up.gender,
+                up.looking_for,
+                up.instagram_handle,
+                up.facebook_handle,
+                up.spotify_handle,
+                up.onboarding_completed
+            FROM users u
+            LEFT JOIN user_profiles up ON up.user_id = u.id
+            WHERE u.id = :user_id
+            "
+        );
+        $query->execute(['user_id' => $userId]);
+
+        return $query->fetch(PDO::FETCH_ASSOC) ?: null;
+    }
+
+    public function deactivateUser(int $userId): void
+    {
+        $query = $this->database->connect()->prepare(
+            "
+            UPDATE users
+            SET is_active = FALSE,
+                updated_at = CURRENT_TIMESTAMP
+            WHERE id = :user_id
+            "
+        );
+        $query->execute(['user_id' => $userId]);
+    }
 }

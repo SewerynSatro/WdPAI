@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <?php include __DIR__ . '/partials/head.html'; ?>
+    <link rel="stylesheet" href="/public/styles/partials/sidebar.css" />
+    <link rel="stylesheet" href="/public/styles/admin.css" />
+</head>
+<body>
+<div class="dashboard-layout">
+    <?php include __DIR__ . '/partials/sidebar.html'; ?>
+
+    <?php
+        $profileName = htmlspecialchars($reportedProfile['display_name'] ?? 'Unknown', ENT_QUOTES, 'UTF-8');
+        $profileEmail = htmlspecialchars($reportedProfile['email'] ?? '', ENT_QUOTES, 'UTF-8');
+        $profileAge = !empty($reportedProfile['age']) ? ', ' . (int) $reportedProfile['age'] : '';
+        $profileBio = htmlspecialchars($reportedProfile['bio'] ?? 'No bio yet.', ENT_QUOTES, 'UTF-8');
+        $genres = $musicPreview['top_genres'] ?? [];
+        $artists = $musicPreview['top_artists'] ?? [];
+        $tracks = $musicPreview['top_tracks'] ?? [];
+        $isActive = !empty($reportedProfile['is_active']);
+    ?>
+
+    <main class="dashboard-main admin-main">
+        <header class="admin-header">
+            <div>
+                <a class="admin-back-link" href="/admin">
+                    <span class="material-symbols-outlined">arrow_back</span>
+                    Back to Admin
+                </a>
+                <span class="admin-kicker">Reported Profile</span>
+                <h1><?= $profileName ?><?= $profileAge ?></h1>
+            </div>
+            <span class="admin-role <?= $isActive ? '' : 'is-disabled' ?>"><?= $isActive ? 'ACTIVE' : 'BANNED' ?></span>
+        </header>
+
+        <section class="admin-review-grid">
+            <article class="admin-panel">
+                <div class="admin-panel-header">
+                    <h2>Profile</h2>
+                    <span><?= $profileEmail ?></span>
+                </div>
+                <div class="admin-profile-body">
+                    <p><?= $profileBio ?></p>
+                    <dl class="admin-profile-details">
+                        <div>
+                            <dt>Gender</dt>
+                            <dd><?= htmlspecialchars($reportedProfile['gender'] ?? 'Not set', ENT_QUOTES, 'UTF-8') ?></dd>
+                        </div>
+                        <div>
+                            <dt>Looking For</dt>
+                            <dd><?= htmlspecialchars($reportedProfile['looking_for'] ?? 'Not set', ENT_QUOTES, 'UTF-8') ?></dd>
+                        </div>
+                        <div>
+                            <dt>Onboarding</dt>
+                            <dd><?= !empty($reportedProfile['onboarding_completed']) ? 'Completed' : 'Incomplete' ?></dd>
+                        </div>
+                        <div>
+                            <dt>Created</dt>
+                            <dd><?= htmlspecialchars(substr((string) ($reportedProfile['created_at'] ?? ''), 0, 10), ENT_QUOTES, 'UTF-8') ?></dd>
+                        </div>
+                    </dl>
+
+                    <div class="admin-profile-socials">
+                        <?php if (!empty($reportedProfile['spotify_handle'])): ?>
+                            <span class="admin-social">Spotify: <?= htmlspecialchars($reportedProfile['spotify_handle'], ENT_QUOTES, 'UTF-8') ?></span>
+                        <?php endif; ?>
+                        <?php if (!empty($reportedProfile['instagram_handle'])): ?>
+                            <span class="admin-social">Instagram: <?= htmlspecialchars($reportedProfile['instagram_handle'], ENT_QUOTES, 'UTF-8') ?></span>
+                        <?php endif; ?>
+                        <?php if (!empty($reportedProfile['facebook_handle'])): ?>
+                            <span class="admin-social">Facebook: <?= htmlspecialchars($reportedProfile['facebook_handle'], ENT_QUOTES, 'UTF-8') ?></span>
+                        <?php endif; ?>
+                    </div>
+
+                    <?php if ($isActive && strtoupper((string) ($reportedProfile['role'] ?? '')) !== 'ADMIN'): ?>
+                        <form method="POST" action="/admin/users/<?= (int) $reportedProfile['id'] ?>/ban" class="admin-ban-form">
+                            <button type="submit" class="admin-danger-btn" onclick="return confirm('Ban this user?')">
+                                <span class="material-symbols-outlined">block</span>
+                                Ban User
+                            </button>
+                        </form>
+                    <?php endif; ?>
+                </div>
+            </article>
+
+            <article class="admin-panel">
+                <div class="admin-panel-header">
+                    <h2>Reports</h2>
+                    <span><?= count($reports ?? []) ?> total</span>
+                </div>
+                <div class="admin-report-list">
+                    <?php foreach (($reports ?? []) as $report): ?>
+                        <div class="admin-report-item">
+                            <div>
+                                <strong><?= htmlspecialchars($report['reason'] ?? '', ENT_QUOTES, 'UTF-8') ?></strong>
+                                <span><?= htmlspecialchars($report['reporter_name'] ?? 'Unknown', ENT_QUOTES, 'UTF-8') ?> · <?= htmlspecialchars($report['reporter_email'] ?? '', ENT_QUOTES, 'UTF-8') ?></span>
+                            </div>
+                            <span class="admin-status <?= ($report['status'] ?? '') === 'OPEN' ? 'is-active' : 'is-disabled' ?>">
+                                <?= htmlspecialchars($report['status'] ?? '', ENT_QUOTES, 'UTF-8') ?>
+                            </span>
+                        </div>
+                    <?php endforeach; ?>
+                    <?php if (empty($reports)): ?>
+                        <p class="admin-empty">No reports for this profile.</p>
+                    <?php endif; ?>
+                </div>
+            </article>
+        </section>
+
+        <section class="admin-review-grid">
+            <article class="admin-panel">
+                <div class="admin-panel-header">
+                    <h2>Music DNA</h2>
+                    <span><?= count($genres) ?> genres</span>
+                </div>
+                <div class="admin-chip-list">
+                    <?php foreach ($genres as $genre): ?>
+                        <span><?= htmlspecialchars($genre, ENT_QUOTES, 'UTF-8') ?></span>
+                    <?php endforeach; ?>
+                    <?php if (empty($genres)): ?>
+                        <p class="admin-empty">No genres synced.</p>
+                    <?php endif; ?>
+                </div>
+            </article>
+
+            <article class="admin-panel">
+                <div class="admin-panel-header">
+                    <h2>Top Artists</h2>
+                    <span><?= count($artists) ?> shown</span>
+                </div>
+                <div class="admin-mini-list">
+                    <?php foreach ($artists as $artist): ?>
+                        <div>
+                            <?php if (!empty($artist['artist_image_url'])): ?>
+                                <img src="<?= htmlspecialchars($artist['artist_image_url'], ENT_QUOTES, 'UTF-8') ?>" alt="" />
+                            <?php endif; ?>
+                            <span><?= htmlspecialchars($artist['artist_name'] ?? '', ENT_QUOTES, 'UTF-8') ?></span>
+                        </div>
+                    <?php endforeach; ?>
+                    <?php if (empty($artists)): ?>
+                        <p class="admin-empty">No artists synced.</p>
+                    <?php endif; ?>
+                </div>
+            </article>
+
+            <article class="admin-panel">
+                <div class="admin-panel-header">
+                    <h2>Top Tracks</h2>
+                    <span><?= count($tracks) ?> shown</span>
+                </div>
+                <div class="admin-mini-list">
+                    <?php foreach ($tracks as $track): ?>
+                        <div>
+                            <?php if (!empty($track['album_image_url'])): ?>
+                                <img src="<?= htmlspecialchars($track['album_image_url'], ENT_QUOTES, 'UTF-8') ?>" alt="" />
+                            <?php endif; ?>
+                            <span><?= htmlspecialchars($track['track_name'] ?? '', ENT_QUOTES, 'UTF-8') ?></span>
+                        </div>
+                    <?php endforeach; ?>
+                    <?php if (empty($tracks)): ?>
+                        <p class="admin-empty">No tracks synced.</p>
+                    <?php endif; ?>
+                </div>
+            </article>
+        </section>
+    </main>
+</div>
+</body>
+</html>
