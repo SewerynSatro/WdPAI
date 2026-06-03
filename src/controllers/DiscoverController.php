@@ -86,8 +86,8 @@ class DiscoverController extends AppController {
         $candidateArtists = array_column($this->musicRepository->getArtistsForUser($candidateId), 'artist_name');
         $userTracks = array_column($this->musicRepository->getTopTracksForUser($userId), 'track_name');
         $candidateTracks = array_column($this->musicRepository->getTopTracksForUser($candidateId), 'track_name');
-        $userGenres = array_keys($this->musicRepository->getGenresForUser($userId));
-        $candidateGenres = array_keys($this->musicRepository->getGenresForUser($candidateId));
+        $userGenres = array_slice(array_keys($this->musicRepository->getGenresForUser($userId)), 0, 5);
+        $candidateGenres = array_slice(array_keys($this->musicRepository->getGenresForUser($candidateId)), 0, 5);
 
         $sharedTaste = $this->overlapPercent($userArtists, $candidateArtists);
         $genreMatch = $this->overlapPercent($userGenres, $candidateGenres);

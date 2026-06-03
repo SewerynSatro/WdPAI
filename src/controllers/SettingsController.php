@@ -118,6 +118,24 @@ class SettingsController extends AppController
         echo json_encode(['ok' => true]);
     }
 
+    public function updateDistance()
+    {
+        $this->requireLogin();
+
+        $userId = (int) $_SESSION['user_id'];
+        $maxDistanceKm = $this->boundedIntPostValue('max_distance_km', 5, 500, 50);
+
+        $this->profilesRepository->updateProfile($userId, [
+            'max_distance_km' => $maxDistanceKm,
+        ]);
+
+        header('Content-Type: application/json');
+        echo json_encode([
+            'ok' => true,
+            'max_distance_km' => $maxDistanceKm,
+        ]);
+    }
+
     public function connectProvider(string $provider)
     {
         $this->requireLogin();

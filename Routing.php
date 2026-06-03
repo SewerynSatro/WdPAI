@@ -76,6 +76,10 @@ class Routing {
                     $controller = new SettingsController();
                     $controller->updateLocation();
                     return;
+                case 'settings/distance':
+                    $controller = new SettingsController();
+                    $controller->updateDistance();
+                    return;
                 case 'settings/sync-music':
                     $controller = new SettingsController();
                     $controller->syncMusic();

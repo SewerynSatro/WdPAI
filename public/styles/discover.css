@@ -395,6 +395,13 @@ body {
     background-repeat: no-repeat;
 }
 
+.artist-photo img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+}
+
 .artist-photo .material-symbols-outlined {
     font-size: 2rem;
     color: rgba(255, 255, 255, 0.20);
