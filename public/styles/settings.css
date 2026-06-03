@@ -147,7 +147,9 @@
 }
 
 .settings-input::placeholder {
-    color: var(--text-faint);
+    color: rgba(255, 255, 255, 0.32);
+    -webkit-text-fill-color: rgba(255, 255, 255, 0.32);
+    opacity: 1;
 }
 
 .settings-input:focus {

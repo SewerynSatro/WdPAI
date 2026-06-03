@@ -81,6 +81,7 @@ class UsersRepository extends Repository {
                     up.instagram_handle,
                     up.facebook_handle,
                     up.spotify_handle,
+                    current_profile.looking_for AS current_looking_for,
                     current_profile.latitude AS current_latitude,
                     current_profile.longitude AS current_longitude,
                     COALESCE(current_profile.max_distance_km, 50) AS current_max_distance_km,
@@ -145,9 +146,17 @@ class UsersRepository extends Repository {
                       SELECT target_id FROM swipes WHERE swiper_id = :swiper_id
                   )
             ) candidates
-            WHERE current_latitude IS NULL
-               OR current_longitude IS NULL
-               OR distance_km <= current_max_distance_km
+            WHERE (
+                current_latitude IS NULL
+                OR current_longitude IS NULL
+                OR distance_km <= current_max_distance_km
+            )
+            AND (
+                current_looking_for IS NULL
+                OR current_looking_for = ''
+                OR current_looking_for = 'everyone'
+                OR gender = current_looking_for
+            )
             ORDER BY
                 ((artist_overlap * 4) + (genre_overlap * 3) + (track_overlap * 2)) DESC,
                 distance_km ASC NULLS LAST,
