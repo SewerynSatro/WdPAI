@@ -5,17 +5,20 @@ require_once __DIR__ . '/../repositories/MatchesRepository.php';
 require_once __DIR__ . '/../repositories/MusicRepository.php';
 require_once __DIR__ . '/../repositories/SwipesRepository.php';
 require_once __DIR__ . '/../repositories/UsersRepository.php';
+require_once __DIR__ . '/../services/MatchScoringService.php';
 
 class DiscoverController extends AppController {
 
     private MatchesRepository $matchesRepository;
     private MusicRepository $musicRepository;
+    private MatchScoringService $matchScoringService;
     private SwipesRepository $swipesRepository;
     private UsersRepository $usersRepository;
 
     public function __construct() {
         $this->matchesRepository = new MatchesRepository();
         $this->musicRepository = new MusicRepository();
+        $this->matchScoringService = new MatchScoringService();
         $this->swipesRepository = new SwipesRepository();
         $this->usersRepository = UsersRepository::getInstance();
     }
@@ -24,7 +27,7 @@ class DiscoverController extends AppController {
         $this->requireCompletedOnboarding();
 
         $userId = (int) $_SESSION['user_id'];
-        $candidate = $this->usersRepository->getDiscoverCandidateForUser($userId);
+        $candidate = $this->bestCandidateForUser($userId);
         $musicPreview = ['top_artists' => [], 'top_tracks' => [], 'top_genres' => []];
         $scores = [
             'musicSync' => 0,
@@ -36,7 +39,7 @@ class DiscoverController extends AppController {
         if ($candidate) {
             $candidate['age'] = $this->ageFromBirthDate($candidate['birth_date'] ?? null);
             $musicPreview = $this->musicRepository->getMusicPreviewForUser((int) $candidate['id']);
-            $scores = $this->calculateScores($userId, (int) $candidate['id']);
+            $scores = $this->matchScoringService->compare($userId, (int) $candidate['id']);
         }
 
         return $this->render('discover', [
@@ -81,38 +84,21 @@ class DiscoverController extends AppController {
         }
     }
 
-    private function calculateScores(int $userId, int $candidateId): array {
-        $userArtists = array_column($this->musicRepository->getArtistsForUser($userId), 'artist_name');
-        $candidateArtists = array_column($this->musicRepository->getArtistsForUser($candidateId), 'artist_name');
-        $userTracks = array_column($this->musicRepository->getTopTracksForUser($userId), 'track_name');
-        $candidateTracks = array_column($this->musicRepository->getTopTracksForUser($candidateId), 'track_name');
-        $userGenres = array_slice(array_keys($this->musicRepository->getGenresForUser($userId)), 0, 5);
-        $candidateGenres = array_slice(array_keys($this->musicRepository->getGenresForUser($candidateId)), 0, 5);
+    private function bestCandidateForUser(int $userId)
+    {
+        $candidates = $this->usersRepository->getDiscoverCandidatesForUser($userId, 50);
+        $bestCandidate = null;
+        $bestScore = -1;
 
-        $sharedTaste = $this->overlapPercent($userArtists, $candidateArtists);
-        $genreMatch = $this->overlapPercent($userGenres, $candidateGenres);
-        $vibeMatch = $this->overlapPercent($userTracks, $candidateTracks);
-        $musicSync = (int) round(($sharedTaste * 0.4) + ($genreMatch * 0.35) + ($vibeMatch * 0.25));
+        foreach ($candidates as $candidate) {
+            $score = $this->matchScoringService->compare($userId, (int) $candidate['id'])['musicSync'];
 
-        return [
-            'musicSync' => $musicSync,
-            'sharedTaste' => $sharedTaste,
-            'genreMatch' => $genreMatch,
-            'vibeMatch' => $vibeMatch,
-        ];
-    }
-
-    private function overlapPercent(array $left, array $right): int {
-        $left = array_unique(array_filter(array_map('strtolower', $left)));
-        $right = array_unique(array_filter(array_map('strtolower', $right)));
-
-        if (empty($left) || empty($right)) {
-            return 0;
+            if ($score > $bestScore) {
+                $bestScore = $score;
+                $bestCandidate = $candidate;
+            }
         }
 
-        $shared = array_intersect($left, $right);
-        $total = array_unique(array_merge($left, $right));
-
-        return (int) round((count($shared) / count($total)) * 100);
+        return $bestCandidate;
     }
 }

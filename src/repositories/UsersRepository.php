@@ -50,6 +50,12 @@ class UsersRepository extends Repository {
 
     public function getDiscoverCandidateForUser(int $userId)
     {
+        return $this->getDiscoverCandidatesForUser($userId, 1)[0] ?? null;
+    }
+
+    public function getDiscoverCandidatesForUser(int $userId, int $limit = 50): array
+    {
+        $limit = max(1, min(100, $limit));
         $query = $this->database->connect()->prepare(
             "
             WITH current_top_genres AS (
@@ -179,7 +185,7 @@ class UsersRepository extends Repository {
                 ((artist_overlap * 4) + (genre_overlap * 3) + (track_overlap * 2)) DESC,
                 distance_km ASC NULLS LAST,
                 RANDOM()
-            LIMIT 1
+            LIMIT {$limit}
             "
         );
         $query->execute([
@@ -191,7 +197,7 @@ class UsersRepository extends Repository {
             'swiper_id' => $userId,
         ]);
 
-        return $query->fetch(PDO::FETCH_ASSOC) ?: null;
+        return $query->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function getUserByEmail(string $email)

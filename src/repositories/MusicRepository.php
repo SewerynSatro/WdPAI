@@ -48,6 +48,57 @@ class MusicRepository extends Repository {
         return $query->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function getAllArtistsForUser(int $userId): array
+    {
+        $query = $this->database->connect()->prepare(
+            "
+            SELECT artist_name, artist_image_url, artist_id, rank, time_range
+            FROM user_artists
+            WHERE user_id = :user_id
+            ORDER BY
+                CASE time_range
+                    WHEN 'short_term' THEN 1
+                    WHEN 'medium_term' THEN 2
+                    ELSE 3
+                END,
+                rank
+            "
+        );
+        $query->execute(['user_id' => $userId]);
+
+        return $query->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getAllTracksForUser(int $userId): array
+    {
+        $query = $this->database->connect()->prepare(
+            "
+            SELECT
+                track_name,
+                artist_name,
+                album_name,
+                album_image_url,
+                duration_ms,
+                spotify_url,
+                track_id,
+                rank,
+                time_range
+            FROM user_tracks
+            WHERE user_id = :user_id
+            ORDER BY
+                CASE time_range
+                    WHEN 'short_term' THEN 1
+                    WHEN 'medium_term' THEN 2
+                    ELSE 3
+                END,
+                rank
+            "
+        );
+        $query->execute(['user_id' => $userId]);
+
+        return $query->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     public function getGenresForUser(int $userId): array
     {
         $query = $this->database->connect()->prepare(
@@ -72,7 +123,7 @@ class MusicRepository extends Repository {
     {
         $query = $this->database->connect()->prepare(
             "
-            SELECT track_name, artist_name, album_name, album_image_url, played_at
+            SELECT track_id, track_name, artist_name, album_name, album_image_url, played_at
             FROM user_recent_plays
             WHERE user_id = :user_id
             ORDER BY played_at DESC

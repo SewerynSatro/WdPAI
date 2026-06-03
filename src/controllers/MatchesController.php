@@ -3,14 +3,17 @@
 require_once 'AppController.php';
 require_once __DIR__ . '/../repositories/MatchesRepository.php';
 require_once __DIR__ . '/../repositories/MusicRepository.php';
+require_once __DIR__ . '/../services/MatchScoringService.php';
 
 class MatchesController extends AppController {
 
     private MatchesRepository $matchesRepository;
+    private MatchScoringService $matchScoringService;
     private MusicRepository $musicRepository;
 
     public function __construct() {
         $this->matchesRepository = new MatchesRepository();
+        $this->matchScoringService = new MatchScoringService();
         $this->musicRepository = new MusicRepository();
     }
 
@@ -44,7 +47,7 @@ class MatchesController extends AppController {
         }
 
         $musicPreview = $this->musicRepository->getMusicPreviewForUser((int) $partner['partner_id']);
-        $scores = $this->calculateScores($userId, (int) $partner['partner_id']);
+        $scores = $this->matchScoringService->compare($userId, (int) $partner['partner_id']);
         $partner['partner_age'] = $this->ageFromBirthDate($partner['partner_birth_date'] ?? null);
 
         return $this->render('matches-view', [
@@ -72,38 +75,4 @@ class MatchesController extends AppController {
         }
     }
 
-    private function calculateScores(int $userId, int $partnerId): array {
-        $userArtists = array_column($this->musicRepository->getArtistsForUser($userId), 'artist_name');
-        $partnerArtists = array_column($this->musicRepository->getArtistsForUser($partnerId), 'artist_name');
-        $userTracks = array_column($this->musicRepository->getTopTracksForUser($userId), 'track_name');
-        $partnerTracks = array_column($this->musicRepository->getTopTracksForUser($partnerId), 'track_name');
-        $userGenres = array_keys($this->musicRepository->getGenresForUser($userId));
-        $partnerGenres = array_keys($this->musicRepository->getGenresForUser($partnerId));
-
-        $sharedTaste = $this->overlapPercent($userArtists, $partnerArtists);
-        $genreMatch = $this->overlapPercent($userGenres, $partnerGenres);
-        $vibeMatch = $this->overlapPercent($userTracks, $partnerTracks);
-        $musicSync = (int) round(($sharedTaste * 0.4) + ($genreMatch * 0.35) + ($vibeMatch * 0.25));
-
-        return [
-            'musicSync' => $musicSync,
-            'sharedTaste' => $sharedTaste,
-            'genreMatch' => $genreMatch,
-            'vibeMatch' => $vibeMatch,
-        ];
-    }
-
-    private function overlapPercent(array $left, array $right): int {
-        $left = array_unique(array_filter(array_map('strtolower', $left)));
-        $right = array_unique(array_filter(array_map('strtolower', $right)));
-
-        if (empty($left) || empty($right)) {
-            return 0;
-        }
-
-        $shared = array_intersect($left, $right);
-        $total = array_unique(array_merge($left, $right));
-
-        return (int) round((count($shared) / count($total)) * 100);
-    }
 }
