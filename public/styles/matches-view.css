@@ -74,10 +74,11 @@
 
 .match-report-btn {
     align-items: center;
-    background: rgba(246, 80, 189, 0.10);
-    border: 1px solid rgba(246, 80, 189, 0.28);
+    background: rgba(48, 42, 42, 0.10);
+    border: 1px solid #731f1c;
     border-radius: var(--radius-full);
-    color: #ff84d8;
+    box-shadow: 0 0 18px rgba(220, 38, 38, 0.24);
+    color: #731f1c;
     cursor: pointer;
     display: inline-flex;
     font-family: inherit;
@@ -89,9 +90,27 @@
 }
 
 .match-report-btn:hover {
-    background: rgba(246, 80, 189, 0.18);
+    background: rgba(115, 31, 28, 0.10);
+    border-color: #f87171;
+    color: #3b100e;
 }
 
 .match-report-btn .material-symbols-outlined {
     font-size: 0.95rem;
+}
+
+@media (max-width: 600px) {
+    .match-report-btn {
+        background: transparent;
+        border: 0;
+        box-shadow: none;
+        color: #731f1c;
+        padding: 0.25rem 0;
+        text-transform: none;
+    }
+
+    .match-report-btn:hover {
+        background: transparent;
+        color: #eb3f38;
+    }
 }
