@@ -14,7 +14,7 @@ class OnboardingController extends AppController {
     public function __construct() {
         $this->profilesRepository = new ProfilesRepository();
         $this->providerAccountsRepository = new ProviderAccountsRepository();
-        $this->usersRepository = new UsersRepository();
+        $this->usersRepository = UsersRepository::getInstance();
     }
 
     public function index() {

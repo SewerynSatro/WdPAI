@@ -7,27 +7,36 @@ require_once __DIR__ . '/../repositories/ProfilesRepository.php';
 class SecurityController extends AppController {
 
     private UsersRepository $usersRepository;
+    private const AUTH_ERROR_MESSAGE = 'Nieprawidlowy email lub haslo.';
+    private const REGISTER_ERROR_MESSAGE = 'Nie mozna utworzyc konta z podanymi danymi.';
 
     public function __construct() {
-        $this->usersRepository = new UsersRepository();
+        $this->usersRepository = UsersRepository::getInstance();
     }
 
     public function login() {
+        $this->requireHttps();
+
         if ($this->isPost()) {
-            $email    = $_POST['email'] ?? '';
+            $email = trim($_POST['email'] ?? '');
             $password = $_POST['password'] ?? '';
 
-            $usersRepository = new UsersRepository();
-            $user = $usersRepository->getUserByEmail($email);
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                return $this->render('login', [
+                    'messages' => self::AUTH_ERROR_MESSAGE,
+                ]);
+            }
+
+            $user = $this->usersRepository->getUserByEmail($email);
 
             if (!$user || !password_verify($password, $user['password'])) {
                 return $this->render('login', [
-                    'messages' => 'Nieprawidłowy email lub hasło.'
+                    'messages' => self::AUTH_ERROR_MESSAGE,
                 ]);
             }
 
             $this->startSession();
-            $_SESSION['user_id']    = $user['id'];
+            $_SESSION['user_id'] = $user['id'];
             $_SESSION['user_email'] = $user['email'];
 
             if ($this->hasCompletedOnboarding((int) $user['id'])) {
@@ -41,34 +50,41 @@ class SecurityController extends AppController {
     }
 
     public function register() {
+        $this->requireHttps();
+
         if ($this->isPost()) {
-            $email      = trim($_POST['email'] ?? '');
-            $password   = $_POST['password'] ?? '';
-            $password2  = $_POST['password2'] ?? '';
+            $email = trim($_POST['email'] ?? '');
+            $password = $_POST['password'] ?? '';
+            $password2 = $_POST['password2'] ?? '';
             $displayName = trim($_POST['displayName'] ?? '');
 
-            // Walidacja
             if (!$email || !$password || !$displayName) {
                 return $this->render('register', [
-                    'messages' => 'Wypełnij wszystkie pola.'
+                    'messages' => 'Wypelnij wszystkie pola.',
+                ]);
+            }
+
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                return $this->render('register', [
+                    'messages' => self::REGISTER_ERROR_MESSAGE,
                 ]);
             }
 
             if ($password !== $password2) {
                 return $this->render('register', [
-                    'messages' => 'Hasła nie są identyczne.'
+                    'messages' => 'Hasla nie sa identyczne.',
                 ]);
             }
 
             if (strlen($password) < 8) {
                 return $this->render('register', [
-                    'messages' => 'Hasło musi mieć minimum 8 znaków.'
+                    'messages' => 'Haslo musi miec minimum 8 znakow.',
                 ]);
             }
 
             if ($this->usersRepository->getUserByEmail($email)) {
                 return $this->render('register', [
-                    'messages' => 'Konto z tym emailem już istnieje.'
+                    'messages' => self::REGISTER_ERROR_MESSAGE,
                 ]);
             }
 

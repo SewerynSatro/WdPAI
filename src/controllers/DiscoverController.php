@@ -17,7 +17,7 @@ class DiscoverController extends AppController {
         $this->matchesRepository = new MatchesRepository();
         $this->musicRepository = new MusicRepository();
         $this->swipesRepository = new SwipesRepository();
-        $this->usersRepository = new UsersRepository();
+        $this->usersRepository = UsersRepository::getInstance();
     }
 
     public function index() {

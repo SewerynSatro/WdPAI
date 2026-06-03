@@ -22,7 +22,7 @@ class SettingsController extends AppController
         $this->providerAccountsRepository = new ProviderAccountsRepository();
         $this->spotifyProvider = new SpotifyProvider();
         $this->musicSyncService = new MusicSyncService();
-        $this->usersRepository = new UsersRepository();
+        $this->usersRepository = UsersRepository::getInstance();
     }
 
     public function index()

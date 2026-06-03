@@ -3,6 +3,21 @@
 require_once 'Repository.php';
 
 class UsersRepository extends Repository {
+    private static ?UsersRepository $instance = null;
+
+    private function __construct()
+    {
+        parent::__construct();
+    }
+
+    public static function getInstance(): UsersRepository
+    {
+        if (self::$instance === null) {
+            self::$instance = new self();
+        }
+
+        return self::$instance;
+    }
 
     public function getUserById(int $id)
     {

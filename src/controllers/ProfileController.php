@@ -17,7 +17,7 @@ class ProfileController extends AppController {
         $this->musicRepository = new MusicRepository();
         $this->profilesRepository = new ProfilesRepository();
         $this->providerAccountsRepository = new ProviderAccountsRepository();
-        $this->usersRepository = new UsersRepository();
+        $this->usersRepository = UsersRepository::getInstance();
     }
 
     public function index() {

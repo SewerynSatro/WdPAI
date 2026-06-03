@@ -24,9 +24,41 @@ class AppController {
 
     protected function redirect(string $path): void
     {
-        $url = "http://$_SERVER[HTTP_HOST]";
+        $scheme = $this->isHttpsRequest() ? 'https' : 'http';
+        $url = "{$scheme}://$_SERVER[HTTP_HOST]";
         header("Location: {$url}{$path}");
         exit();
+    }
+
+    protected function requireHttps(): void
+    {
+        if ($this->isLocalRequest() || $this->isHttpsRequest()) {
+            return;
+        }
+
+        $host = $_SERVER['HTTP_HOST'] ?? '';
+        $uri = $_SERVER['REQUEST_URI'] ?? '/';
+
+        header("Location: https://{$host}{$uri}", true, 301);
+        exit();
+    }
+
+    private function isHttpsRequest(): bool
+    {
+        $https = strtolower((string) ($_SERVER['HTTPS'] ?? ''));
+        $forwardedProto = strtolower((string) ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? ''));
+
+        return $https === 'on'
+            || $https === '1'
+            || $forwardedProto === 'https';
+    }
+
+    private function isLocalRequest(): bool
+    {
+        $host = strtolower((string) ($_SERVER['HTTP_HOST'] ?? ''));
+        $host = explode(':', $host)[0];
+
+        return in_array($host, ['localhost', '127.0.0.1', '::1'], true);
     }
 
     protected function requireLogin(): bool
@@ -55,7 +87,7 @@ class AppController {
     {
         $profilesRepository = new ProfilesRepository();
         $providerAccountsRepository = new ProviderAccountsRepository();
-        $usersRepository = new UsersRepository();
+        $usersRepository = UsersRepository::getInstance();
         $user = $usersRepository->getUserById($userId);
         $profile = $profilesRepository->getProfileByUserId($userId);
 

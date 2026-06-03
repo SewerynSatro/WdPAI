@@ -9,7 +9,7 @@ class DashboardController extends AppController {
         $this->requireCompletedOnboarding();
 
         $title = "INDEX";
-        $usersRepository = new UsersRepository();
+        $usersRepository = UsersRepository::getInstance();
         $users = $usersRepository->getUsers();
 
         $this->redirect('/discover');
