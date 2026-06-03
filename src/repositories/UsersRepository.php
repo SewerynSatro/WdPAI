@@ -23,7 +23,9 @@ class UsersRepository extends Repository {
     {
         $query = $this->database->connect()->prepare(
             "
-            SELECT * FROM users WHERE id = :id
+            SELECT id, email, firstname, display_name, is_active
+            FROM users
+            WHERE id = :id
             "
         );
         $query->bindParam(':id', $id, PDO::PARAM_INT);
@@ -36,7 +38,8 @@ class UsersRepository extends Repository {
     {
         $query = $this->database->connect()->prepare(
             "
-            SELECT * FROM users;
+            SELECT id, email, firstname, display_name, is_active
+            FROM users;
             "
         );
         $query->execute();
@@ -191,10 +194,13 @@ class UsersRepository extends Repository {
         return $query->fetch(PDO::FETCH_ASSOC) ?: null;
     }
 
-  public function getUserByEmail(string $email) {
+    public function getUserByEmail(string $email)
+    {
         $query = $this->database->connect()->prepare(
             "
-            SELECT * FROM users WHERE email = :email
+            SELECT id, email, firstname, display_name, is_active
+            FROM users
+            WHERE email = :email
             "
         );
         $query->bindParam(':email', $email);
@@ -202,6 +208,21 @@ class UsersRepository extends Repository {
 
         $user = $query->fetch(PDO::FETCH_ASSOC);
         return $user;
+    }
+
+    public function getAuthUserByEmail(string $email)
+    {
+        $query = $this->database->connect()->prepare(
+            "
+            SELECT id, email, password, display_name, is_active
+            FROM users
+            WHERE email = :email
+            "
+        );
+        $query->bindParam(':email', $email);
+        $query->execute();
+
+        return $query->fetch(PDO::FETCH_ASSOC);
     }
 
     public function emailExistsForOtherUser(string $email, int $userId): bool

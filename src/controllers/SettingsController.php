@@ -50,7 +50,12 @@ class SettingsController extends AppController
         $password = $_POST['password'] ?? '';
         $passwordConfirm = $_POST['password_confirm'] ?? '';
 
-        if ($displayName === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        if (
+            $displayName === ''
+            || strlen($displayName) > 50
+            || strlen($email) > 255
+            || !filter_var($email, FILTER_VALIDATE_EMAIL)
+        ) {
             $url = "http://$_SERVER[HTTP_HOST]";
             header("Location: {$url}/settings");
             exit();
@@ -64,7 +69,10 @@ class SettingsController extends AppController
 
         $hashedPassword = null;
         if ($password !== '' || $passwordConfirm !== '') {
-            if ($password !== $passwordConfirm || strlen($password) < 8) {
+            if (
+                $password !== $passwordConfirm
+                || !$this->isStrongPassword($password)
+            ) {
                 $url = "http://$_SERVER[HTTP_HOST]";
                 header("Location: {$url}/settings");
                 exit();
@@ -237,5 +245,15 @@ class SettingsController extends AppController
         }
 
         return max($min, min($max, (int) $value));
+    }
+
+    private function isStrongPassword(string $password): bool
+    {
+        return strlen($password) >= 8
+            && strlen($password) <= 128
+            && preg_match('/[a-z]/', $password)
+            && preg_match('/[A-Z]/', $password)
+            && preg_match('/\d/', $password)
+            && preg_match('/[^a-zA-Z\d]/', $password);
     }
 }

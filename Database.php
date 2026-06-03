@@ -33,8 +33,9 @@ class Database {
             return $conn;
         }
         catch(PDOException $e) {
-            // change to error page e.g. 404 not found etc.
-            die("Connection failed: " . $e->getMessage());
+            error_log('Database connection failed.');
+            http_response_code(500);
+            die('Database connection failed.');
         }
     }
 

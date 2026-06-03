@@ -8,8 +8,23 @@ class AppController {
     protected function startSession(): void
     {
         if (session_status() === PHP_SESSION_NONE) {
+            $this->configureSessionCookie();
             session_start();
         }
+    }
+
+    private function configureSessionCookie(): void
+    {
+        $params = session_get_cookie_params();
+
+        session_set_cookie_params([
+            'lifetime' => $params['lifetime'],
+            'path' => $params['path'] ?: '/',
+            'domain' => $params['domain'],
+            'secure' => !$this->isLocalRequest(),
+            'httponly' => true,
+            'samesite' => 'Lax',
+        ]);
     }
 
     protected function isGet(): bool
@@ -20,6 +35,18 @@ class AppController {
     protected function isPost(): bool
     {
         return $_SERVER["REQUEST_METHOD"] === 'POST';
+    }
+
+    protected function isAllowedFormMethod(): bool
+    {
+        return $this->isGet() || $this->isPost();
+    }
+
+    protected function rejectUnsupportedMethod(): void
+    {
+        http_response_code(405);
+        header('Allow: GET, POST');
+        exit();
     }
 
     protected function redirect(string $path): void
@@ -59,6 +86,26 @@ class AppController {
         $host = explode(':', $host)[0];
 
         return in_array($host, ['localhost', '127.0.0.1', '::1'], true);
+    }
+
+    protected function csrfToken(string $scope): string
+    {
+        $this->startSession();
+        $key = "csrf_{$scope}";
+
+        if (empty($_SESSION[$key])) {
+            $_SESSION[$key] = bin2hex(random_bytes(32));
+        }
+
+        return $_SESSION[$key];
+    }
+
+    protected function isValidCsrfToken(string $scope, ?string $token): bool
+    {
+        $this->startSession();
+        $expected = $_SESSION["csrf_{$scope}"] ?? '';
+
+        return is_string($token) && $expected !== '' && hash_equals($expected, $token);
     }
 
     protected function requireLogin(): bool
