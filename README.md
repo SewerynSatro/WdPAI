@@ -145,8 +145,8 @@ W praktyce o tym, co użytkownik może zrobić, decyduje kombinacja:
 │       ├── init/init.sql     # Schemat bazy (uruchamiany przy starcie)
 │       └── seed/demo_users.sql
 ├── src/
-│   ├── controllers/          # Security, Dashboard, Discover, Matches, Profile,
-│   │                         # Settings, Onboarding, Admin, Reports, App
+│   ├── controllers/          # Security, Discover, Matches, Profile, Settings,
+│   │                         # Onboarding, Admin, Reports, App
 │   ├── repositories/         # Users, Profiles, Matches, Swipes, Music,
 │   │                         # Reports, ProviderAccounts, Repository (bazowa)
 │   ├── services/             # MatchScoringService, MusicSyncService
@@ -154,7 +154,6 @@ W praktyce o tym, co użytkownik może zrobić, decyduje kombinacja:
 └── public/
     ├── views/                # Szablony + partiale (nav, sidebar, head)
     ├── styles/               # CSS
-    ├── scripts/main.js
     └── assets/
 ```
 
@@ -514,7 +513,6 @@ Wykorzystywane zakresy (scopes): `user-top-read`, `user-read-recently-played`,
 | GET/POST | `/register`                            | Rejestracja                        |
 | POST   | `/logout`                                | Wylogowanie                        |
 | GET/POST | `/onboarding`                          | Onboarding (widok / zapis)         |
-| GET    | `/dashboard`                             | Pulpit                             |
 | GET    | `/discover`                              | Discover (kandydaci)               |
 | POST   | `/discover/swipe`                        | LIKE / PASS                        |
 | GET    | `/matches`                               | Lista matchy                       |

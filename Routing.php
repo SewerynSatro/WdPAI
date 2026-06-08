@@ -1,7 +1,6 @@
 <?php
 
 require_once 'src/controllers/SecurityController.php';
-require_once 'src/controllers/DashboardController.php';
 require_once 'src/controllers/DiscoverController.php';
 require_once 'src/controllers/MatchesController.php';
 require_once 'src/controllers/ProfileController.php';
@@ -14,8 +13,6 @@ require_once 'src/controllers/ReportsController.php';
 // TODO musimy zapewnic, ze utworzony 
 // obiekt kontrollera ma tylko jedna instancję - SINGLETON
 
-// TODO 2 /dashboard -- wszystkei dnae
-// /dashboard/12234 -- wyciagnie nam jakis elemtn o wskaznaym ID 12234
 // REGEX
 class Routing {
 
@@ -23,10 +20,6 @@ class Routing {
         "login" => [
             "controller" => "SecurityController",
             "action" => "login"
-        ],
-        "dashboard" => [
-            "controller" => "DashboardController",
-            "action" => "index"
         ],
         "" => [
             "controller" => "SecurityController",
@@ -123,10 +116,6 @@ class Routing {
         switch($path) {
             case '':
                 include 'public/views/landing.html';
-                break;
-            case 'dashboard':
-                $controller = new DashboardController();
-                $controller->index();
                 break;
             case 'admin':
                 $controller = new AdminController();
