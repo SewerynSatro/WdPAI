@@ -17,6 +17,32 @@ CREATE TABLE IF NOT EXISTS users (
 );
 CREATE INDEX IF NOT EXISTS idx_users_email ON users (email);
 
+UPDATE users
+SET email = 'archived_' || id || '_' || email
+WHERE email = 'admin@heartbeat.dev'
+  AND id != 1;
+
+INSERT INTO users (id, firstname, email, password, display_name, role, is_active)
+VALUES (
+    1,
+    'HeartBeat Admin',
+    'admin@heartbeat.dev',
+    '$2y$10$46SH2KEGxzFUlnAFFGYo3uELCVSRMN7EMKvQKymp/W5e0GJVc3C7m',
+    'HeartBeat Admin',
+    'ADMIN',
+    TRUE
+)
+ON CONFLICT (id) DO UPDATE SET
+    firstname = EXCLUDED.firstname,
+    email = EXCLUDED.email,
+    password = EXCLUDED.password,
+    display_name = EXCLUDED.display_name,
+    role = EXCLUDED.role,
+    is_active = TRUE,
+    updated_at = CURRENT_TIMESTAMP;
+
+SELECT setval('users_id_seq', GREATEST((SELECT MAX(id) FROM users), 1), TRUE);
+
 CREATE TABLE IF NOT EXISTS user_profiles (
     id SERIAL PRIMARY KEY,
     user_id INTEGER NOT NULL UNIQUE REFERENCES users(id) ON DELETE CASCADE,

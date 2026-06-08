@@ -538,6 +538,13 @@ Wykorzystywane zakresy (scopes): `user-top-read`, `user-read-recently-played`,
 
 ## Konto administratora i dane testowe
 
+- Domyślne konto administratora:
+  ```txt
+  email: admin@heartbeat.dev
+  hasło: Admin123!
+  id: 1
+  ```
+
 - Rola administratora to `role = 'ADMIN'` w tabeli `users`. Aby nadać uprawnienia
   istniejącemu kontu:
   ```sql

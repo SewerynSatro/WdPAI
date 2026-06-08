@@ -39,7 +39,7 @@ WITH base AS (
             20.4801, 18.5984, 20.6286, 17.9213, 15.5062, 14.4378,
             13.4050, 17.1077, 25.2797, 24.0297
         ]::double precision[] AS place_lngs
-    FROM generate_series(1, 200) AS gs
+    FROM generate_series(1, 20) AS gs
 )
 SELECT
     gs,
