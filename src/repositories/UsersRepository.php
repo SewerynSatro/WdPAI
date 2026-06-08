@@ -165,6 +165,7 @@ class UsersRepository extends Repository {
                 LEFT JOIN user_profiles current_profile ON current_profile.user_id = :current_user_id
                 WHERE u.id != :user_id
                   AND u.is_active = TRUE
+                  AND u.role = 'USER'
                   AND COALESCE(up.onboarding_completed, FALSE) = TRUE
                   AND u.id NOT IN (
                       SELECT target_id FROM swipes WHERE swiper_id = :swiper_id
