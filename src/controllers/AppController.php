@@ -171,6 +171,10 @@ class AppController {
     {
         $this->requireLogin();
 
+        if ($this->isAdminUser((int) $_SESSION['user_id'])) {
+            return true;
+        }
+
         if (!$this->hasCompletedOnboarding((int) $_SESSION['user_id'])) {
             $this->redirect('/onboarding');
         }
@@ -200,11 +204,28 @@ class AppController {
         $usersRepository = UsersRepository::getInstance();
         $user = $usersRepository->getUserById((int) $_SESSION['user_id']);
 
+        return $this->isAdminRecord($user);
+    }
+
+    protected function isAdminUser(int $userId): bool
+    {
+        $usersRepository = UsersRepository::getInstance();
+        $user = $usersRepository->getUserById($userId);
+
+        return $this->isAdminRecord($user);
+    }
+
+    private function isAdminRecord($user): bool
+    {
         return !empty($user['is_active']) && strtoupper((string) ($user['role'] ?? '')) === 'ADMIN';
     }
 
     protected function hasCompletedOnboarding(int $userId): bool
     {
+        if ($this->isAdminUser($userId)) {
+            return true;
+        }
+
         $profilesRepository = new ProfilesRepository();
         $providerAccountsRepository = new ProviderAccountsRepository();
         $usersRepository = UsersRepository::getInstance();

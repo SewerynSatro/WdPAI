@@ -66,7 +66,7 @@ class SecurityController extends AppController {
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['user_email'] = $user['email'];
 
-            if ($this->hasCompletedOnboarding((int) $user['id'])) {
+            if ($this->isAdminUser((int) $user['id']) || $this->hasCompletedOnboarding((int) $user['id'])) {
                 $this->redirect('/discover');
             }
 

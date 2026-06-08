@@ -25,6 +25,7 @@ services:
       - pg-network
     volumes:
       - ./docker/db/init:/docker-entrypoint-initdb.d
+      - ./docker/db/seed/demo_users.sql:/docker-entrypoint-initdb.d/zz-demo_users.sql:ro
   
   php:
     build:
