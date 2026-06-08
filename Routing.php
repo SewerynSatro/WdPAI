@@ -61,6 +61,18 @@ class Routing {
                 return;
             }
 
+            if (preg_match('/^admin\/users\/(\d+)\/unban$/', $path, $m)) {
+                $controller = new AdminController();
+                $controller->unbanUser((int)$m[1]);
+                return;
+            }
+
+            if (preg_match('/^admin\/users\/(\d+)\/dismiss-reports$/', $path, $m)) {
+                $controller = new AdminController();
+                $controller->dismissReports((int)$m[1]);
+                return;
+            }
+
             switch ($path) {
                 case 'login':
                     $controller = new SecurityController();

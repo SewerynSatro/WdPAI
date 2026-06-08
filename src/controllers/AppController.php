@@ -116,7 +116,39 @@ class AppController {
             $this->redirect('/login');
         }
 
+        $usersRepository = UsersRepository::getInstance();
+        $user = $usersRepository->getUserById((int) $_SESSION['user_id']);
+
+        if (!$user || empty($user['is_active'])) {
+            $this->destroyCurrentSession();
+            $this->redirect('/login?blocked=1');
+        }
+
         return true;
+    }
+
+    protected function destroyCurrentSession(): void
+    {
+        $this->startSession();
+        $_SESSION = [];
+
+        if (ini_get('session.use_cookies')) {
+            $params = session_get_cookie_params();
+            setcookie(
+                session_name(),
+                '',
+                [
+                    'expires' => time() - 42000,
+                    'path' => $params['path'],
+                    'domain' => $params['domain'],
+                    'secure' => (bool) $params['secure'],
+                    'httponly' => (bool) $params['httponly'],
+                    'samesite' => $params['samesite'] ?? 'Lax',
+                ]
+            );
+        }
+
+        session_destroy();
     }
 
     protected function requireCompletedOnboarding(): bool
@@ -152,7 +184,7 @@ class AppController {
         $usersRepository = UsersRepository::getInstance();
         $user = $usersRepository->getUserById((int) $_SESSION['user_id']);
 
-        return strtoupper((string) ($user['role'] ?? '')) === 'ADMIN';
+        return !empty($user['is_active']) && strtoupper((string) ($user['role'] ?? '')) === 'ADMIN';
     }
 
     protected function hasCompletedOnboarding(int $userId): bool

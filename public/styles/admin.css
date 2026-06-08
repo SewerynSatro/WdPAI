@@ -119,6 +119,29 @@
     overflow-x: auto;
 }
 
+.admin-filter-tabs {
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+}
+
+.admin-filter-tabs a {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-full);
+    color: var(--text-muted);
+    font-size: 0.78rem;
+    font-weight: 700;
+    padding: 0.35rem 0.75rem;
+}
+
+.admin-filter-tabs a.active,
+.admin-filter-tabs a:hover {
+    background: rgba(141, 246, 136, 0.10);
+    border-color: rgba(141, 246, 136, 0.28);
+    color: var(--primary);
+}
+
 .admin-table {
     border-collapse: collapse;
     min-width: 42rem;
@@ -302,16 +325,20 @@
     padding: 0.35rem 0.65rem;
 }
 
+.admin-action-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
 .admin-ban-form {
     margin: 0;
 }
 
-.admin-danger-btn {
+.admin-danger-btn,
+.admin-secondary-btn {
     align-items: center;
-    background: rgba(246, 80, 189, 0.14);
-    border: 1px solid rgba(246, 80, 189, 0.36);
     border-radius: 0.5rem;
-    color: #ff84d8;
     cursor: pointer;
     display: inline-flex;
     font-family: inherit;
@@ -322,8 +349,24 @@
     text-transform: uppercase;
 }
 
+.admin-danger-btn {
+    background: rgba(246, 80, 189, 0.14);
+    border: 1px solid rgba(246, 80, 189, 0.36);
+    color: #ff84d8;
+}
+
 .admin-danger-btn:hover {
     background: rgba(246, 80, 189, 0.22);
+}
+
+.admin-secondary-btn {
+    background: rgba(141, 246, 136, 0.10);
+    border: 1px solid rgba(141, 246, 136, 0.28);
+    color: var(--primary);
+}
+
+.admin-secondary-btn:hover {
+    background: rgba(141, 246, 136, 0.16);
 }
 
 .admin-report-list,

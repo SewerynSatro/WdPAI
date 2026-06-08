@@ -29,6 +29,7 @@ class AdminController extends AppController {
     public function index(): void
     {
         $this->requireAdmin();
+        $reportFilter = $this->reportFilter($_GET['filter'] ?? 'open');
 
         $this->render('admin', [
             'pageTitle' => 'Admin | HeartBeat',
@@ -41,9 +42,12 @@ class AdminController extends AppController {
                 'swipes' => $this->swipesRepository->countAll(),
                 'spotifyAccounts' => $this->providerAccountsRepository->countConnectedAccounts('spotify'),
                 'reportedUsers' => $this->reportsRepository->countOpen(),
+                'resolvedReports' => $this->reportsRepository->countResolved(),
+                'bannedReports' => $this->reportsRepository->countBanned(),
             ],
             'latestUsers' => $this->usersRepository->getLatestUsers(),
-            'reportedUsers' => $this->reportsRepository->getOpenReportedUsers(),
+            'reportedUsers' => $this->reportsRepository->getReportedUsers($reportFilter),
+            'reportFilter' => $reportFilter,
             'topArtist' => $this->musicRepository->getMostPopularArtist(),
         ]);
     }
@@ -67,6 +71,7 @@ class AdminController extends AppController {
             'userEmail' => $_SESSION['user_email'] ?? '',
             'reportedProfile' => $profile,
             'reports' => $this->reportsRepository->getReportsForUser($userId),
+            'hasOpenReports' => $this->reportsRepository->hasOpenReportsForUser($userId),
             'musicPreview' => $this->musicRepository->getMusicPreviewForUser($userId),
         ]);
     }
@@ -93,6 +98,60 @@ class AdminController extends AppController {
         }
 
         $this->redirect('/admin/reports/' . $userId);
+    }
+
+    public function unbanUser(int $userId): void
+    {
+        $this->requireAdmin();
+
+        if (!$this->isPost()) {
+            $this->rejectUnsupportedMethod();
+        }
+
+        $profile = $this->usersRepository->getUserById($userId);
+
+        if (!$profile) {
+            include 'public/views/404.html';
+            return;
+        }
+
+        if (strtoupper((string) ($profile['role'] ?? '')) !== 'ADMIN') {
+            $this->usersRepository->activateUser($userId);
+            $this->reportsRepository->resolveOpenReportsForUser(
+                $userId,
+                (int) $_SESSION['user_id'],
+                'User unbanned by admin'
+            );
+        }
+
+        $this->redirect('/admin/reports/' . $userId);
+    }
+
+    public function dismissReports(int $userId): void
+    {
+        $this->requireAdmin();
+
+        if (!$this->isPost()) {
+            $this->rejectUnsupportedMethod();
+        }
+
+        if (!$this->usersRepository->getUserById($userId)) {
+            include 'public/views/404.html';
+            return;
+        }
+
+        $this->reportsRepository->resolveOpenReportsForUser(
+            $userId,
+            (int) $_SESSION['user_id'],
+            'Reports dismissed by admin'
+        );
+
+        $this->redirect('/admin/reports/' . $userId);
+    }
+
+    private function reportFilter(string $filter): string
+    {
+        return in_array($filter, ['open', 'resolved', 'banned'], true) ? $filter : 'open';
     }
 
     private function ageFromBirthDate(?string $birthDate): ?int

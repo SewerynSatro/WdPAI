@@ -376,4 +376,17 @@ class UsersRepository extends Repository {
         );
         $query->execute(['user_id' => $userId]);
     }
+
+    public function activateUser(int $userId): void
+    {
+        $query = $this->database->connect()->prepare(
+            "
+            UPDATE users
+            SET is_active = TRUE,
+                updated_at = CURRENT_TIMESTAMP
+            WHERE id = :user_id
+            "
+        );
+        $query->execute(['user_id' => $userId]);
+    }
 }

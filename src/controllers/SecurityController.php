@@ -8,6 +8,7 @@ class SecurityController extends AppController {
 
     private UsersRepository $usersRepository;
     private const AUTH_ERROR_MESSAGE = 'Nieprawidlowy email lub haslo.';
+    private const BLOCKED_ACCOUNT_MESSAGE = 'Konto zablokowane.';
     private const REGISTER_ERROR_MESSAGE = 'Nie mozna utworzyc konta z podanymi danymi.';
     private const LOGIN_LOCK_MESSAGE = 'Zbyt wiele nieudanych prob logowania. Sprobuj ponownie za kilka minut.';
     private const MAX_LOGIN_ATTEMPTS = 5;
@@ -55,7 +56,7 @@ class SecurityController extends AppController {
 
             if (empty($user['is_active'])) {
                 $this->recordFailedLogin($email, 'inactive_user');
-                return $this->renderLogin(self::AUTH_ERROR_MESSAGE, 401);
+                return $this->renderLogin(self::BLOCKED_ACCOUNT_MESSAGE, 403);
             }
 
             $this->startSession();
@@ -70,6 +71,10 @@ class SecurityController extends AppController {
             }
 
             $this->redirect('/onboarding');
+        }
+
+        if (($this->isGet() && ($_GET['blocked'] ?? '') === '1')) {
+            return $this->renderLogin(self::BLOCKED_ACCOUNT_MESSAGE, 403);
         }
 
         return $this->renderLogin();
@@ -139,27 +144,7 @@ class SecurityController extends AppController {
     }
 
     public function logout() {
-        $this->startSession();
-        $_SESSION = [];
-
-        if (ini_get('session.use_cookies')) {
-            $params = session_get_cookie_params();
-            setcookie(
-                session_name(),
-                '',
-                [
-                    'expires' => time() - 42000,
-                    'path' => $params['path'],
-                    'domain' => $params['domain'],
-                    'secure' => (bool) $params['secure'],
-                    'httponly' => (bool) $params['httponly'],
-                    'samesite' => $params['samesite'] ?? 'Lax',
-                ]
-            );
-        }
-
-        session_destroy();
-
+        $this->destroyCurrentSession();
         $this->redirect('/login');
     }
 
