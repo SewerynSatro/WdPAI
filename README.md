@@ -15,6 +15,7 @@ zewnętrznych bibliotek aplikacyjnych.
 ## Spis treści
 
 - [Funkcjonalności](#funkcjonalności)
+- [Zrzuty ekranu](#zrzuty-ekranu)
 - [Stos technologiczny](#stos-technologiczny)
 - [Architektura](#architektura)
 - [Role i uprawnienia](#role-i-uprawnienia)
@@ -45,6 +46,40 @@ zewnętrznych bibliotek aplikacyjnych.
 - **Zgłaszanie użytkowników** (reports).
 - **Panel administratora** — przegląd statystyk, zgłoszeń, banowanie /
   odbanowywanie użytkowników, zamykanie zgłoszeń.
+
+---
+
+## Zrzuty ekranu
+
+### Logowanie i rejestracja
+
+| Desktop | Mobile |
+|---------|--------|
+| <img src="docs/screenshots/desktop/login-desktop.png" alt="Logowanie desktop" width="420"> | <img src="docs/screenshots/mobile/login-mobile.png" alt="Logowanie mobile" width="220"> |
+| <img src="docs/screenshots/desktop/create-account-desktop.png" alt="Rejestracja desktop" width="420"> | <img src="docs/screenshots/mobile/create-account-mobile.png" alt="Rejestracja mobile" width="220"> |
+
+### Discover i matche
+
+| Desktop | Mobile |
+|---------|--------|
+| <img src="docs/screenshots/desktop/discover-desktop.png" alt="Discover desktop" width="420"> | <img src="docs/screenshots/mobile/discover-mobile.png" alt="Discover mobile" width="220"> |
+| <img src="docs/screenshots/desktop/matches-desktop.png" alt="Matche desktop" width="420"> | <img src="docs/screenshots/mobile/matches-mobile.png" alt="Matche mobile" width="220"> |
+
+### Profil, ustawienia i panel admina
+
+| Desktop | Mobile |
+|---------|--------|
+| <img src="docs/screenshots/desktop/profile-desktop.png" alt="Profil desktop" width="420"> | <img src="docs/screenshots/mobile/profile-mobile.png" alt="Profil mobile" width="220"> |
+| <img src="docs/screenshots/desktop/settings-desktop.png" alt="Ustawienia desktop" width="420"> | <img src="docs/screenshots/mobile/settings-mobile.png" alt="Ustawienia mobile" width="220"> |
+| <img src="docs/screenshots/desktop/admin-desktop.png" alt="Panel admina desktop" width="420"> | <img src="docs/screenshots/mobile/admin-mobile.png" alt="Panel admina mobile" width="220"> |
+
+### Stany aplikacji
+
+| Desktop | Mobile |
+|---------|--------|
+| <img src="docs/screenshots/desktop/no-connection-desktop.png" alt="Brak połączenia desktop" width="420"> | <img src="docs/screenshots/mobile/no-connection-mobile.png" alt="Brak połączenia mobile" width="220"> |
+| <img src="docs/screenshots/desktop/no-matches-destkop.png" alt="Brak matchy desktop" width="420"> | <img src="docs/screenshots/mobile/no-matches-mobile.png" alt="Brak matchy mobile" width="220"> |
+| <img src="docs/screenshots/desktop/403-desktop.png" alt="403 desktop" width="420"> | <img src="docs/screenshots/mobile/403-mobile.png" alt="403 mobile" width="220"> |
 
 ---
 
