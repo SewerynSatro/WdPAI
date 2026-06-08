@@ -159,3 +159,81 @@ CREATE TABLE IF NOT EXISTS user_reports (
 );
 CREATE INDEX IF NOT EXISTS idx_user_reports_reported ON user_reports (reported_user_id);
 CREATE INDEX IF NOT EXISTS idx_user_reports_status ON user_reports (status);
+
+CREATE OR REPLACE FUNCTION touch_updated_at()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = CURRENT_TIMESTAMP;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS trg_users_touch_updated_at ON users;
+CREATE TRIGGER trg_users_touch_updated_at
+BEFORE UPDATE ON users
+FOR EACH ROW
+EXECUTE FUNCTION touch_updated_at();
+
+DROP TRIGGER IF EXISTS trg_user_profiles_touch_updated_at ON user_profiles;
+CREATE TRIGGER trg_user_profiles_touch_updated_at
+BEFORE UPDATE ON user_profiles
+FOR EACH ROW
+EXECUTE FUNCTION touch_updated_at();
+
+DROP TRIGGER IF EXISTS trg_provider_accounts_touch_updated_at ON provider_accounts;
+CREATE TRIGGER trg_provider_accounts_touch_updated_at
+BEFORE UPDATE ON provider_accounts
+FOR EACH ROW
+EXECUTE FUNCTION touch_updated_at();
+
+DROP TRIGGER IF EXISTS trg_user_reports_touch_updated_at ON user_reports;
+CREATE TRIGGER trg_user_reports_touch_updated_at
+BEFORE UPDATE ON user_reports
+FOR EACH ROW
+EXECUTE FUNCTION touch_updated_at();
+
+DROP TRIGGER IF EXISTS trg_user_now_playing_touch_updated_at ON user_now_playing;
+CREATE TRIGGER trg_user_now_playing_touch_updated_at
+BEFORE UPDATE ON user_now_playing
+FOR EACH ROW
+EXECUTE FUNCTION touch_updated_at();
+
+CREATE OR REPLACE FUNCTION heartbeat_distance_km(
+    lat_a DOUBLE PRECISION,
+    lng_a DOUBLE PRECISION,
+    lat_b DOUBLE PRECISION,
+    lng_b DOUBLE PRECISION
+)
+RETURNS NUMERIC AS $$
+BEGIN
+    IF lat_a IS NULL OR lng_a IS NULL OR lat_b IS NULL OR lng_b IS NULL THEN
+        RETURN NULL;
+    END IF;
+
+    RETURN ROUND((
+        6371 * ACOS(LEAST(1, GREATEST(-1,
+            COS(RADIANS(lat_a))
+            * COS(RADIANS(lat_b))
+            * COS(RADIANS(lng_b) - RADIANS(lng_a))
+            + SIN(RADIANS(lat_a))
+            * SIN(RADIANS(lat_b))
+        )))
+    )::numeric, 1);
+END;
+$$ LANGUAGE plpgsql IMMUTABLE;
+
+CREATE OR REPLACE VIEW admin_report_summary AS
+SELECT
+    r.reported_user_id,
+    COUNT(*) AS total_reports,
+    COUNT(*) FILTER (WHERE r.status = 'OPEN') AS open_reports,
+    COUNT(*) FILTER (WHERE r.status = 'RESOLVED') AS resolved_reports,
+    MAX(r.created_at) AS last_reported_at,
+    MAX(r.reviewed_at) AS last_reviewed_at,
+    u.email,
+    COALESCE(u.display_name, u.firstname) AS display_name,
+    u.role,
+    u.is_active
+FROM user_reports r
+JOIN users u ON u.id = r.reported_user_id
+GROUP BY r.reported_user_id, u.email, u.display_name, u.firstname, u.role, u.is_active;
