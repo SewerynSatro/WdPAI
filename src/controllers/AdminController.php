@@ -160,16 +160,4 @@ class AdminController extends AppController {
         return in_array($filter, ['open', 'resolved', 'banned'], true) ? $filter : 'open';
     }
 
-    private function ageFromBirthDate(?string $birthDate): ?int
-    {
-        if (!$birthDate) {
-            return null;
-        }
-
-        try {
-            return (int) date_diff(date_create($birthDate), date_create('today'))->y;
-        } catch (Throwable $e) {
-            return null;
-        }
-    }
 }

@@ -57,6 +57,48 @@ class AppController {
         exit();
     }
 
+    protected function nullablePostValue(string $key): ?string
+    {
+        $value = trim($_POST[$key] ?? '');
+
+        return $value === '' ? null : $value;
+    }
+
+    protected function nullableFloatPostValue(string $key): ?float
+    {
+        $value = trim($_POST[$key] ?? '');
+
+        return $value === '' || !is_numeric($value) ? null : (float) $value;
+    }
+
+    protected function boundedIntPostValue(string $key, int $min, int $max, int $default): int
+    {
+        $value = trim($_POST[$key] ?? '');
+        if ($value === '' || !is_numeric($value)) {
+            return $default;
+        }
+
+        return max($min, min($max, (int) $value));
+    }
+
+    protected function ageFromBirthDate(?string $birthDate): ?int
+    {
+        if (!$birthDate) {
+            return null;
+        }
+
+        try {
+            return (int) date_diff(date_create($birthDate), date_create('today'))->y;
+        } catch (Throwable $e) {
+            return null;
+        }
+    }
+
+    protected function isTruthyDbValue($value): bool
+    {
+        return in_array($value, [true, 1, '1', 't', 'true'], true);
+    }
+
     protected function requireHttps(): void
     {
         if ($this->isLocalRequest() || $this->isHttpsRequest()) {
@@ -236,7 +278,7 @@ class AppController {
             return false;
         }
 
-        $hasCompletedFlag = in_array($profile['onboarding_completed'], [true, 1, '1', 't', 'true'], true);
+        $hasCompletedFlag = $this->isTruthyDbValue($profile['onboarding_completed']);
         $hasRequiredProfile = trim($user['display_name'] ?? '') !== ''
             && filter_var($user['email'] ?? '', FILTER_VALIDATE_EMAIL)
             && trim($profile['bio'] ?? '') !== ''

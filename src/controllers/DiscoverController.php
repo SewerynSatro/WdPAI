@@ -73,18 +73,6 @@ class DiscoverController extends AppController {
         $this->redirect('/discover');
     }
 
-    private function ageFromBirthDate(?string $birthDate): ?int {
-        if (!$birthDate) {
-            return null;
-        }
-
-        try {
-            return (int) date_diff(date_create($birthDate), date_create('today'))->y;
-        } catch (Throwable $e) {
-            return null;
-        }
-    }
-
     private function bestCandidateForUser(int $userId)
     {
         $candidates = $this->usersRepository->getDiscoverCandidatesForUser($userId, 50);

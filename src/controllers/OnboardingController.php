@@ -102,25 +102,6 @@ class OnboardingController extends AppController {
         $this->redirect('/discover');
     }
 
-    private function nullablePostValue(string $key): ?string {
-        $value = trim($_POST[$key] ?? '');
-        return $value === '' ? null : $value;
-    }
-
-    private function nullableFloatPostValue(string $key): ?float {
-        $value = trim($_POST[$key] ?? '');
-        return $value === '' || !is_numeric($value) ? null : (float) $value;
-    }
-
-    private function boundedIntPostValue(string $key, int $min, int $max, int $default): int {
-        $value = trim($_POST[$key] ?? '');
-        if ($value === '' || !is_numeric($value)) {
-            return $default;
-        }
-
-        return max($min, min($max, (int) $value));
-    }
-
     private function missingRequiredFields(array $data): array {
         $missing = [];
 

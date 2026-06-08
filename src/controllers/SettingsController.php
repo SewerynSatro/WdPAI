@@ -7,6 +7,7 @@ require_once __DIR__ . '/../repositories/ProviderAccountsRepository.php';
 require_once __DIR__ . '/../repositories/UsersRepository.php';
 require_once __DIR__ . '/../providers/SpotifyProvider.php';
 require_once __DIR__ . '/../services/MusicSyncService.php';
+require_once __DIR__ . '/../services/PasswordPolicy.php';
 
 class SettingsController extends AppController
 {
@@ -57,26 +58,20 @@ class SettingsController extends AppController
             || strlen($email) > 255
             || !filter_var($email, FILTER_VALIDATE_EMAIL)
         ) {
-            $url = "http://$_SERVER[HTTP_HOST]";
-            header("Location: {$url}/settings");
-            exit();
+            $this->redirect('/settings');
         }
 
         if ($this->usersRepository->emailExistsForOtherUser($email, $userId)) {
-            $url = "http://$_SERVER[HTTP_HOST]";
-            header("Location: {$url}/settings");
-            exit();
+            $this->redirect('/settings');
         }
 
         $hashedPassword = null;
         if ($password !== '' || $passwordConfirm !== '') {
             if (
                 $password !== $passwordConfirm
-                || !$this->isStrongPassword($password)
+                || !PasswordPolicy::isStrong($password)
             ) {
-                $url = "http://$_SERVER[HTTP_HOST]";
-                header("Location: {$url}/settings");
-                exit();
+                $this->redirect('/settings');
             }
 
             $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
@@ -98,9 +93,7 @@ class SettingsController extends AppController
             'max_distance_km' => $this->boundedIntPostValue('max_distance_km', 5, 500, 50),
         ]);
 
-        $url = "http://$_SERVER[HTTP_HOST]";
-        header("Location: {$url}/settings");
-        exit();
+        $this->redirect('/settings');
     }
 
     public function updateLocation()
@@ -229,35 +222,4 @@ class SettingsController extends AppController
         $this->redirect('/profile');
     }
 
-    private function nullablePostValue(string $key): ?string
-    {
-        $value = trim($_POST[$key] ?? '');
-        return $value === '' ? null : $value;
-    }
-
-    private function nullableFloatPostValue(string $key): ?float
-    {
-        $value = trim($_POST[$key] ?? '');
-        return $value === '' || !is_numeric($value) ? null : (float) $value;
-    }
-
-    private function boundedIntPostValue(string $key, int $min, int $max, int $default): int
-    {
-        $value = trim($_POST[$key] ?? '');
-        if ($value === '' || !is_numeric($value)) {
-            return $default;
-        }
-
-        return max($min, min($max, (int) $value));
-    }
-
-    private function isStrongPassword(string $password): bool
-    {
-        return strlen($password) >= 8
-            && strlen($password) <= 128
-            && preg_match('/[a-z]/', $password)
-            && preg_match('/[A-Z]/', $password)
-            && preg_match('/\d/', $password)
-            && preg_match('/[^a-zA-Z\d]/', $password);
-    }
 }

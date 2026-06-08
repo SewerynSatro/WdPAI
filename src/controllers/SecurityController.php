@@ -3,6 +3,7 @@
 require_once 'AppController.php';
 require_once __DIR__ . '/../repositories/UsersRepository.php';
 require_once __DIR__ . '/../repositories/ProfilesRepository.php';
+require_once __DIR__ . '/../services/PasswordPolicy.php';
 
 class SecurityController extends AppController {
 
@@ -117,7 +118,7 @@ class SecurityController extends AppController {
                 return $this->renderRegister('Haslo musi miec minimum 8 znakow, mala i wielka litere, cyfre oraz znak specjalny.', 400);
             }
 
-            if (!$this->isStrongPassword($password)) {
+            if (!PasswordPolicy::isStrong($password)) {
                 return $this->renderRegister('Haslo musi miec minimum 8 znakow, mala i wielka litere, cyfre oraz znak specjalny.', 400);
             }
 
@@ -171,16 +172,6 @@ class SecurityController extends AppController {
             'messages' => $message,
             'csrfToken' => $this->csrfToken('register'),
         ]);
-    }
-
-    private function isStrongPassword(string $password): bool
-    {
-        return strlen($password) >= 8
-            && strlen($password) <= 128
-            && preg_match('/[a-z]/', $password)
-            && preg_match('/[A-Z]/', $password)
-            && preg_match('/\d/', $password)
-            && preg_match('/[^a-zA-Z\d]/', $password);
     }
 
     private function isLoginLocked(string $email): bool
