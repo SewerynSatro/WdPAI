@@ -27,9 +27,10 @@ class DiscoverController extends AppController {
         $this->requireCompletedOnboarding();
 
         $userId = (int) $_SESSION['user_id'];
-        $candidate = $this->bestCandidateForUser($userId);
+        $bestMatch = $this->bestCandidateForUser($userId);
+        $candidate = $bestMatch['candidate'];
         $musicPreview = ['top_artists' => [], 'top_tracks' => [], 'top_genres' => []];
-        $scores = [
+        $scores = $bestMatch['scores'] ?? [
             'musicSync' => 0,
             'sharedTaste' => 0,
             'genreMatch' => 0,
@@ -39,7 +40,6 @@ class DiscoverController extends AppController {
         if ($candidate) {
             $candidate['age'] = $this->ageFromBirthDate($candidate['birth_date'] ?? null);
             $musicPreview = $this->musicRepository->getMusicPreviewForUser((int) $candidate['id']);
-            $scores = $this->matchScoringService->compare($userId, (int) $candidate['id']);
         }
 
         return $this->render('discover', [
@@ -89,17 +89,23 @@ class DiscoverController extends AppController {
     {
         $candidates = $this->usersRepository->getDiscoverCandidatesForUser($userId, 50);
         $bestCandidate = null;
+        $bestScores = null;
         $bestScore = -1;
 
         foreach ($candidates as $candidate) {
-            $score = $this->matchScoringService->compare($userId, (int) $candidate['id'])['musicSync'];
+            $scores = $this->matchScoringService->compare($userId, (int) $candidate['id']);
+            $score = $scores['musicSync'];
 
             if ($score > $bestScore) {
                 $bestScore = $score;
                 $bestCandidate = $candidate;
+                $bestScores = $scores;
             }
         }
 
-        return $bestCandidate;
+        return [
+            'candidate' => $bestCandidate,
+            'scores' => $bestScores,
+        ];
     }
 }

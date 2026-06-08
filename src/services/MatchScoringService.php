@@ -15,6 +15,11 @@ class MatchScoringService
     ];
 
     private MusicRepository $musicRepository;
+    private array $allArtistsCache = [];
+    private array $allTracksCache = [];
+    private array $genresCache = [];
+    private array $recentPlaysCache = [];
+    private array $nowPlayingCache = [];
 
     public function __construct()
     {
@@ -47,12 +52,12 @@ class MatchScoringService
     private function sharedTasteScore(int $userId, int $candidateId): array
     {
         $artistScore = $this->weightedOverlap(
-            $this->rankedItems($this->musicRepository->getAllArtistsForUser($userId), 'artist_id'),
-            $this->rankedItems($this->musicRepository->getAllArtistsForUser($candidateId), 'artist_id')
+            $this->rankedItems($this->getAllArtistsForUser($userId), 'artist_id'),
+            $this->rankedItems($this->getAllArtistsForUser($candidateId), 'artist_id')
         );
         $trackScore = $this->weightedOverlap(
-            $this->rankedItems($this->musicRepository->getAllTracksForUser($userId), 'track_id'),
-            $this->rankedItems($this->musicRepository->getAllTracksForUser($candidateId), 'track_id')
+            $this->rankedItems($this->getAllTracksForUser($userId), 'track_id'),
+            $this->rankedItems($this->getAllTracksForUser($candidateId), 'track_id')
         );
 
         $score = ($artistScore['pct'] * 0.55) + ($trackScore['pct'] * 0.45);
@@ -71,8 +76,8 @@ class MatchScoringService
 
     private function genreMatchScore(int $userId, int $candidateId): array
     {
-        $userGenres = $this->musicRepository->getGenresForUser($userId);
-        $candidateGenres = $this->musicRepository->getGenresForUser($candidateId);
+        $userGenres = $this->getGenresForUser($userId);
+        $candidateGenres = $this->getGenresForUser($candidateId);
 
         if (empty($userGenres) || empty($candidateGenres)) {
             return ['score' => 0.0, 'shared_genres' => []];
@@ -108,14 +113,16 @@ class MatchScoringService
 
     private function vibeMatchScore(int $userId, int $candidateId): array
     {
+        $userRecentPlays = $this->getRecentPlaysForUser($userId);
+        $candidateRecentPlays = $this->getRecentPlaysForUser($candidateId);
         $recentTracks = $this->jaccardScaled(
-            array_column($this->musicRepository->getRecentPlaysForUser($userId), 'track_id'),
-            array_column($this->musicRepository->getRecentPlaysForUser($candidateId), 'track_id'),
+            array_column($userRecentPlays, 'track_id'),
+            array_column($candidateRecentPlays, 'track_id'),
             3.0
         );
         $recentArtists = $this->jaccardScaled(
-            array_map('strtolower', array_column($this->musicRepository->getRecentPlaysForUser($userId), 'artist_name')),
-            array_map('strtolower', array_column($this->musicRepository->getRecentPlaysForUser($candidateId), 'artist_name')),
+            array_map('strtolower', array_column($userRecentPlays, 'artist_name')),
+            array_map('strtolower', array_column($candidateRecentPlays, 'artist_name')),
             2.0
         );
         $nowBonus = $this->nowPlayingBonus($userId, $candidateId);
@@ -201,8 +208,8 @@ class MatchScoringService
 
     private function nowPlayingBonus(int $userId, int $candidateId): int
     {
-        $userNow = $this->musicRepository->getNowPlayingForUser($userId);
-        $candidateNow = $this->musicRepository->getNowPlayingForUser($candidateId);
+        $userNow = $this->getNowPlayingForUser($userId);
+        $candidateNow = $this->getNowPlayingForUser($candidateId);
 
         if (
             !$userNow
@@ -221,6 +228,35 @@ class MatchScoringService
     private function isTruthy($value): bool
     {
         return in_array($value, [true, 1, '1', 't', 'true'], true);
+    }
+
+    private function getAllArtistsForUser(int $userId): array
+    {
+        return $this->allArtistsCache[$userId] ??= $this->musicRepository->getAllArtistsForUser($userId);
+    }
+
+    private function getAllTracksForUser(int $userId): array
+    {
+        return $this->allTracksCache[$userId] ??= $this->musicRepository->getAllTracksForUser($userId);
+    }
+
+    private function getGenresForUser(int $userId): array
+    {
+        return $this->genresCache[$userId] ??= $this->musicRepository->getGenresForUser($userId);
+    }
+
+    private function getRecentPlaysForUser(int $userId): array
+    {
+        return $this->recentPlaysCache[$userId] ??= $this->musicRepository->getRecentPlaysForUser($userId);
+    }
+
+    private function getNowPlayingForUser(int $userId)
+    {
+        if (!array_key_exists($userId, $this->nowPlayingCache)) {
+            $this->nowPlayingCache[$userId] = $this->musicRepository->getNowPlayingForUser($userId);
+        }
+
+        return $this->nowPlayingCache[$userId];
     }
 
     private function scaleScore(float $raw, float $factor): float
