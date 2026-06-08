@@ -39,6 +39,7 @@
 
         <!-- Form -->
         <form method="POST" action="/onboarding" id="onboarding-form">
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($appCsrfToken ?? '', ENT_QUOTES, 'UTF-8') ?>">
             <input type="hidden" name="latitude" id="lat" value="<?= htmlspecialchars($profile['latitude'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
             <input type="hidden" name="longitude" id="lng" value="<?= htmlspecialchars($profile['longitude'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
 
@@ -150,6 +151,8 @@
 </main>
 
 <script>
+    window.heartbeatCsrfToken = <?= json_encode($appCsrfToken ?? '') ?>;
+
     window.heartbeatCaptureLocation = function(options = {}) {
         const label = options.labelId ? document.getElementById(options.labelId) : document.getElementById('loc-label');
 
@@ -175,7 +178,11 @@
                 fetch('/settings/location', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: new URLSearchParams({ latitude, longitude })
+                    body: new URLSearchParams({
+                        latitude,
+                        longitude,
+                        csrf_token: window.heartbeatCsrfToken || ''
+                    })
                 }).then(() => {
                     sessionStorage.setItem('heartbeatLocationSynced', '1');
                     if (label) label.textContent = 'Location saved';

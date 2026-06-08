@@ -144,6 +144,11 @@ class SecurityController extends AppController {
     }
 
     public function logout() {
+        if (!$this->isPost()) {
+            $this->rejectUnsupportedMethod();
+        }
+
+        $this->requireValidCsrfToken();
         $this->destroyCurrentSession();
         $this->redirect('/login');
     }

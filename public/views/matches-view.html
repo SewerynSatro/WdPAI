@@ -156,6 +156,7 @@
                 </a>
                 <?php endif; ?>
                 <form method="POST" action="/reports" class="match-report-form">
+                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($appCsrfToken ?? '', ENT_QUOTES, 'UTF-8') ?>">
                     <input type="hidden" name="reported_user_id" value="<?= (int) $partner['partner_id'] ?>">
                     <input type="hidden" name="reason" value="Reported from match profile">
                     <input type="hidden" name="redirect_to" value="/matches/<?= (int) $partner['partner_id'] ?>">

@@ -37,6 +37,7 @@ class OnboardingController extends AppController {
 
     public function save() {
         $this->requireLogin();
+        $this->requireValidCsrfToken();
 
         $userId = (int) $_SESSION['user_id'];
         $user = $this->usersRepository->getUserById($userId);

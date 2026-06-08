@@ -108,6 +108,22 @@ class AppController {
         return is_string($token) && $expected !== '' && hash_equals($expected, $token);
     }
 
+    protected function requireValidCsrfToken(string $scope = 'app', bool $json = false): void
+    {
+        if ($this->isValidCsrfToken($scope, $_POST['csrf_token'] ?? null)) {
+            return;
+        }
+
+        http_response_code(403);
+
+        if ($json) {
+            header('Content-Type: application/json');
+            echo json_encode(['ok' => false, 'error' => 'invalid_csrf']);
+        }
+
+        exit();
+    }
+
     protected function requireLogin(): bool
     {
         $this->startSession();
@@ -222,6 +238,7 @@ class AppController {
                  
         if(file_exists($templatePath)){
             $variables['isAdmin'] ??= $this->isCurrentUserAdmin();
+            $variables['appCsrfToken'] ??= $this->csrfToken('app');
             extract($variables);
             // ["tab_name" => $title]
 

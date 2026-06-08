@@ -43,6 +43,7 @@ class SettingsController extends AppController
     public function updateAccount()
     {
         $this->requireCompletedOnboarding();
+        $this->requireValidCsrfToken();
 
         $userId = (int) $_SESSION['user_id'];
         $email = trim($_POST['email'] ?? '');
@@ -105,6 +106,7 @@ class SettingsController extends AppController
     public function updateLocation()
     {
         $this->requireLogin();
+        $this->requireValidCsrfToken('app', true);
 
         $userId = (int) $_SESSION['user_id'];
         $latitude = $this->nullableFloatPostValue('latitude');
@@ -129,6 +131,7 @@ class SettingsController extends AppController
     public function updateDistance()
     {
         $this->requireLogin();
+        $this->requireValidCsrfToken('app', true);
 
         $userId = (int) $_SESSION['user_id'];
         $maxDistanceKm = $this->boundedIntPostValue('max_distance_km', 5, 500, 50);
@@ -215,6 +218,7 @@ class SettingsController extends AppController
     public function syncMusic()
     {
         $this->requireCompletedOnboarding();
+        $this->requireValidCsrfToken();
 
         try {
             $this->musicSyncService->syncAllForUser((int) $_SESSION['user_id'], 'spotify');

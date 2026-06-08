@@ -84,6 +84,8 @@ class AdminController extends AppController {
             $this->rejectUnsupportedMethod();
         }
 
+        $this->requireValidCsrfToken();
+
         $currentAdminId = (int) $_SESSION['user_id'];
         $profile = $this->usersRepository->getUserById($userId);
 
@@ -107,6 +109,8 @@ class AdminController extends AppController {
         if (!$this->isPost()) {
             $this->rejectUnsupportedMethod();
         }
+
+        $this->requireValidCsrfToken();
 
         $profile = $this->usersRepository->getUserById($userId);
 
@@ -134,6 +138,8 @@ class AdminController extends AppController {
         if (!$this->isPost()) {
             $this->rejectUnsupportedMethod();
         }
+
+        $this->requireValidCsrfToken();
 
         if (!$this->usersRepository->getUserById($userId)) {
             include 'public/views/404.html';

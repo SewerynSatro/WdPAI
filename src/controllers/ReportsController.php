@@ -22,6 +22,8 @@ class ReportsController extends AppController {
             $this->rejectUnsupportedMethod();
         }
 
+        $this->requireValidCsrfToken();
+
         $reporterId = (int) $_SESSION['user_id'];
         $reportedUserId = (int) ($_POST['reported_user_id'] ?? 0);
         $reason = trim($_POST['reason'] ?? 'Reported from profile');

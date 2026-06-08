@@ -56,6 +56,7 @@ class DiscoverController extends AppController {
 
     public function swipe() {
         $this->requireCompletedOnboarding();
+        $this->requireValidCsrfToken();
 
         $targetId = (int) ($_POST['target_id'] ?? 0);
         $direction = strtoupper(trim($_POST['direction'] ?? ''));
